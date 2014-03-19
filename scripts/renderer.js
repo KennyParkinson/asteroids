@@ -57,6 +57,22 @@ space.graphics = (function() {
 			var newY = Math.sin(spec.rotation);
 			spec.center.x += spec.moveRate * (elapsedTime / 1000) * newX;
 			spec.center.y += spec.moveRate * (elapsedTime / 1000) * newY;
+			if(spec.center.x >= 850)
+			{
+				spec.center.x = -30;
+			}
+			else if(spec.center.x <= -30)
+			{
+				spec.center.x = 850;
+			}
+			if(spec.center.y >= 574)
+			{
+				spec.center.y = -30;
+			}
+			else if(spec.center.y <= -30)
+			{
+				spec.center.y = 574;
+			}
 		};
 
 		that.moveLeft = function(elapsedTime) {
