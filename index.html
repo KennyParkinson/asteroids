@@ -1,0 +1,33 @@
+<html>
+	<head>
+		<title>Watch Yourself</title>
+		<link rel="stylesheet" type="text/css" href="stylesheets/styles.css">
+		<script src = "scripts/modernizr.js"></script>
+		<script src = "scripts/loader.js"></script>
+	</head>
+	<body>
+		<div id = "spaceDiv" class = "mainDisplay displayed selectDisable">
+			<canvas id = "gameCanvas" width = "820" height = "544"></canvas>
+			<div id = "scorediv">
+				<div>
+					This Level:<br/><span id = "levelScore"></span>
+				</div>
+				<div>
+					Overall: <br/><span id = "totalScore"></span>
+				</div>
+			</div>
+			<div class="clearer"></div>
+		</div>
+		<div id = "highScoreDiv" class = "mainDisplay selectDisable"></div>
+		<div id = "creditsDiv" class = "mainDisplay selectDisable">
+		<h3>Designer: Bryce Nelson</h3>
+		<h3>Imparter of Wisdom: Dean Mathias</h3>
+		<h3>Taskmaster: Julise Nelson</h3>
+		<h3>Cute Distraction Manager: Adelia Nelson</h3>
+		</div>
+		<button onclick = "space.gameStart()">New Game </button>
+		<button onclick = "">Continue</button>
+		<button onclick = "">High Scores </button>
+		<button onclick = "">Credits </button>
+	</body>
+</html>

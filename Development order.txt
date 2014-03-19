@@ -1,0 +1,59 @@
+Development order
+	develop individual 				systems
+	rendering, particle systems
+input
+networking
+data persistence
+
+develop game systems first, then game code
+
+
+MILESTONES:
+	1. move the ship, wraps 		around, renders
+	2. objects moving, 			  collisions, projectiles, particles
+	3.AI
+
+game code
+	physics?
+	ai
+	input
+	scoring
+	object updates (movement)
+
+-----------------------------
+game engine/systems
+	particle framework
+	audio
+	collisions
+		Here's the objects, tell 			me what collided.
+Rendering
+input
+networking
+ai?
+physics?
+data persistence
+
+Particle framework
+array of particle systems
+
+movement
+bullets
+ship
+asteroids
+particles
+ufos
+scoring
+ai
+particle systems
+collision detection
+	create a list for each object type, then test the ones that need to see if they collide
+
+server runs the game model and sends the updates to the clients
+
+score persistence on the server
+audio
+	explosions
+	background music
+	menu navigation
+	ship sounds
+rendering
