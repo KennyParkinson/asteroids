@@ -1,6 +1,6 @@
 /*jslint browser: true, white: true, plusplus: true */
 /*global Random */
-function particleSystem(spec) {
+function particleSystem(spec, graphics) {
 	'use strict';
 	var that = {},
 		nextName = 1,	// unique identifier for the next particle
@@ -14,7 +14,7 @@ function particleSystem(spec) {
 	that.create = function() {
 		var p = {
 				image: spec.image,
-				size: 25, //Random.nextGaussian(10, 4),
+				size: Random.nextGaussian(10, 4),
 				center: {x: spec.center.x, y: spec.center.y},
 				direction: Random.nextCircleVector(),
 				speed: Random.nextGaussian(spec.speed.mean, spec.speed.stdev), // pixels per second
@@ -50,7 +50,7 @@ function particleSystem(spec) {
 				particle = particles[value];
 				//
 				// Update how long it has been alive
-				particle.alive += elapsedTime/1000;
+				particle.alive += elapsedTime;
 				
 				//
 				// Update its position
@@ -85,17 +85,11 @@ function particleSystem(spec) {
 	that.render = function() {
 		var value,
 			particle;
-		var canvas = $("#dropCanvas")[0];
-		var context = canvas.getContext('2d');
 		
 		for (value in particles) {
 			if (particles.hasOwnProperty(value)) {
 				particle = particles[value];
-				context.drawImage(
-					particle.image, 
-					particle.center.x - particle.size/2, 
-					particle.center.y - particle.size/2,
-					particle.size, particle.size);
+				graphics.drawImage(particle);
 			}
 		}
 	};

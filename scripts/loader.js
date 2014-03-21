@@ -1,5 +1,6 @@
-var space = {
+var SPACE = {
 	images : {},
+	screens : {},
 
 	status : {
 		preloadRequest : 0,
@@ -19,22 +20,23 @@ window.addEventListener('load', function() {
 	Modernizr.load([
 		{
 			load : [
-				'preload!scripts/input.js',
-				'preload!scripts/jquery.js',
 				'preload!scripts/random.js',
-				'preload!scripts/particle-system.js',
-				'preload!assets/vortex.png',
-				'preload!assets/spaceship.png',
-				'preload!assets/projectile.png',
-				'preload!assets/middleasteroid.png',
-				'preload!assets/littleasteroid.png',
-				'preload!assets/explodsprite.png',
-				'preload!assets/bigasteroid.png',
-				'preload!assets/background.jpg',
-				'preload!scripts/asteroids.js',
-				'preload!scripts/renderer.js'
-
-				
+				'preload!scripts/renderer.js',
+				'preload!scripts/input.js',
+				'preload!scripts/game.js',
+				'preload!scripts/mainmenu.js',
+				'preload!scripts/gameplay.js',
+				'preload!scripts/highscores.js',
+				'preload!scripts/help.js',
+				'preload!scripts/about.js',
+				'preload!images/vortex.png',
+				'preload!images/spaceship.png',
+				'preload!images/projectile.png',
+				'preload!images/middleasteroid.png',
+				'preload!images/littleasteroid.png',
+				'preload!images/explodsprite.png',
+				'preload!images/bigasteroid.png',
+				'preload!images/background.jpg'
 			],
 			complete : function() {
 				console.log('All files requested for loading...');
@@ -43,7 +45,7 @@ window.addEventListener('load', function() {
 	]);
 }, false);
 
-
+//
 // Extend yepnope with our own 'preload' prefix that...
 // * Tracks how many have been requested to load
 // * Tracks how many have been loaded
@@ -51,22 +53,22 @@ window.addEventListener('load', function() {
 yepnope.addPrefix('preload', function(resource) {
 	console.log('preloading: ' + resource.url);
 	
-	space.status.preloadRequest += 1;
+	SPACE.status.preloadRequest += 1;
 	var isImage = /.+\.(jpg|png|gif)$/i.test(resource.url);
 	resource.noexec = isImage;
 	resource.autoCallback = function(e) {
 		if (isImage) {
 			var image = new Image();
 			image.src = resource.url;
-			space.images[resource.url] = image;
+			SPACE.images[resource.url] = image;
 		}
-		space.status.preloadComplete += 1;
+		SPACE.status.preloadComplete += 1;
 		
 		//
 		// When everything has finished preloading, go ahead and start the game
-		if (space.status.preloadComplete === space.status.preloadRequest) {
+		if (SPACE.status.preloadComplete === SPACE.status.preloadRequest) {
 			console.log('Preloading complete!');
-			space.initialize();
+			SPACE.game.initialize();
 		}
 	};
 	

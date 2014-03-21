@@ -1,11 +1,11 @@
 /*jslint browser: true, white: true */
-/*global space */
+/*global SPACE */
 // ------------------------------------------------------------------
 //
-//
-//
+// Base code courtesy of Dr. Mathias
+//			Modified by Kenneth Parkinson
 // ------------------------------------------------------------------
-space.input = (function() {
+SPACE.input = (function() {
 	'use strict';
 	
 	function Mouse() {
@@ -125,12 +125,11 @@ space.input = (function() {
 		window.addEventListener('keyup', keyRelease.bind(that));
 		
 		return that;
-	}
-	
+	}	
 	return {
 		Keyboard : Keyboard,
 		Mouse : Mouse
-	};
+	};;
 }());
 
 //------------------------------------------------------------------

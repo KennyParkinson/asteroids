@@ -1,24 +1,21 @@
 /*jslint browser: true, white: true */
-/*global CanvasRenderingContext2D, requestAnimationFrame, console, space */
+/*global CanvasRenderingContext2D, requestAnimationFrame, console, SPACE */
 // ------------------------------------------------------------------
-// 
+//  Base code courtesy of Dean Mathias has been modified by Kenneth Parkinson
+//
 // This is the game object.  Everything about the game is located in 
 // this object.
 //
 // ------------------------------------------------------------------
-
-space.graphics = (function() {
+SPACE.graphics = (function() {
 	'use strict';
 	
-	var canvas = document.getElementById('gameCanvas'),
+	var canvas = document.getElementById('canvas-main'),
 		context = canvas.getContext('2d');
 	
-	//------------------------------------------------------------------
 	//
 	// Place a 'clear' function on the Canvas prototype, this makes it a part
 	// of the canvas, rather than making a function that calls and does it.
-	//
-	//------------------------------------------------------------------
 	CanvasRenderingContext2D.prototype.clear = function() {
 		this.save();
 		this.setTransform(1, 0, 0, 1, 0, 0);
@@ -26,70 +23,183 @@ space.graphics = (function() {
 		this.restore();
 	};
 	
-	//------------------------------------------------------------------
-	//
-	// Public function that allows the client code to clear the canvas.
-	//
-	//------------------------------------------------------------------
 	function clear() {
 		context.clear();
-	}
-	
-	//------------------------------------------------------------------
-	//
-	// This is used to create a texture function that can be used by client
-	// code for rendering.
-	//
-	//------------------------------------------------------------------
-	function Texture(spec) {
+	};
+	function drawImage(spec) {
+		context.save();
+		
+		context.translate(spec.center.x, spec.center.y);
+		context.rotate(spec.rotation);
+		context.translate(-spec.center.x, -spec.center.y);
+		
+		context.drawImage(
+			spec.image, 
+			spec.center.x - spec.size/2, 
+			spec.center.y - spec.size/2,
+			spec.size, spec.size);
+		
+		context.restore();
+	};
+	function particleSystem(spec, graphics) {
+		'use strict';
+		var that = {},
+			nextName = 1,	// unique identifier for the next particle
+			particles = {};	// Set of all active particles
+
+		//------------------------------------------------------------------
+		//
+		// This creates one new particle
+		//
+		//------------------------------------------------------------------
+		that.create = function() {
+			var p = {
+					image: spec.image,
+					size: Random.nextGaussian(10, 4),
+					center: {x: spec.center.x, y: spec.center.y},
+					direction: Random.nextCircleVector(),
+					speed: Random.nextGaussian(spec.speed.mean, spec.speed.stdev), // pixels per second
+					rotation: 0,
+					lifetime: Random.nextGaussian(spec.lifetime.mean, spec.lifetime.stdev),	// How long the particle should live, in seconds
+					alive: 0	// How long the particle has been alive, in seconds
+				};
+			
+			//
+			// Ensure we have a valid size - gaussian numbers can be negative
+			p.size = Math.max(1, p.size);
+			//
+			// Same thing with lifetime
+			p.lifetime = Math.max(0.01, p.lifetime);
+			//
+			// Assign a unique name to each particle
+			particles[nextName++] = p;
+		};
+		
+		//------------------------------------------------------------------
+		//
+		// Update the state of all particles.  This includes remove any that 
+		// have exceeded their lifetime.
+		//
+		//------------------------------------------------------------------
+		that.update = function(elapsedTime) {
+			var removeMe = [],
+				value,
+				particle;
+			
+			for (value in particles) {
+				if (particles.hasOwnProperty(value)) {
+					particle = particles[value];
+					//
+					// Update how long it has been alive
+					particle.alive += elapsedTime;
+					
+					//
+					// Update its position
+					particle.center.x += (elapsedTime * particle.speed * particle.direction.x);
+					particle.center.y += (elapsedTime * particle.speed * particle.direction.y);
+					
+					//
+					// Rotate proportional to its speed
+					particle.rotation += particle.speed / 500;
+					
+					//
+					// If the lifetime has expired, identify it for removal
+					if (particle.alive > particle.lifetime) {
+						removeMe.push(value);
+					}
+				}
+			}
+
+			//
+			// Remove all of the expired particles
+			for (particle = 0; particle < removeMe.length; particle++) {
+				delete particles[removeMe[particle]];
+			}
+			removeMe.length = 0;
+		};
+		
+		//------------------------------------------------------------------
+		//
+		// Render all particles
+		//
+		//------------------------------------------------------------------
+		that.render = function() {
+			var value,
+				particle;
+			
+			for (value in particles) {
+				if (particles.hasOwnProperty(value)) {
+					particle = particles[value];
+					SPACE.graphics.drawImage(particle);
+				}
+			}
+		};
+		that.setxandy = function(x, y){
+			spec.center.x = x;
+			spec.center.y = y;
+		};
+		return that;
+	};
+	function ship(spec) {
 		var that = {};
 		
 		that.rotateRight = function(elapsedTime) {
 			spec.rotation += spec.rotateRate * (elapsedTime / 1000);
+			// if the rotation is greater than 2PI radians +2PI radians
+			if(spec.rotation >= 2*Math.PI)
+				{spec.rotation = spec.rotation - 2*Math.PI;}
+
 		};
 		
 		that.rotateLeft = function(elapsedTime) {
 			spec.rotation -= spec.rotateRate * (elapsedTime / 1000);
+			// if the rotation is less than 2PI radians +2PI radians
+			if(spec.rotation <= 2*Math.PI)
+				{spec.rotation = spec.rotation + 2*Math.PI;}
 		};
 		
 		that.accelerate = function(elapsedTime) {
-			var newX = Math.cos(spec.rotation);
-			var newY = Math.sin(spec.rotation);
-			spec.center.x += spec.moveRate * (elapsedTime / 1000) * newX;
-			spec.center.y += spec.moveRate * (elapsedTime / 1000) * newY;
-			if(spec.center.x >= 850)
+			var speed = 3;
+			// getting vector total
+			spec.vector = spec.vector + spec.moveRate * (elapsedTime/100000);
+			// calculating x vector from total vector
+			spec.vectorx = spec.vectorx + spec.vector * Math.cos(spec.rotation);
+			// limit on x speed
+			if (spec.vectorx > speed )
+				{spec.vectorx = speed;}
+			if (spec.vectorx < -speed )
+				{spec.vectorx = -speed;}
+			// calculating y vector from the total vector
+			spec.vectory = spec.vectory + spec.vector * Math.sin(spec.rotation);
+			// limit on y speed
+			if (spec.vectory > speed )
+				{spec.vectory = speed;}
+			if (spec.vectory < -speed )
+				{spec.vectory = -speed;}
+
+		};
+
+		that.update = function() {
+			spec.center.x += spec.vectorx;
+			spec.center.y += spec.vectory;
+			if(spec.center.x >= 650)
 			{
 				spec.center.x = -30;
 			}
 			else if(spec.center.x <= -30)
 			{
-				spec.center.x = 850;
+				spec.center.x = 650;
 			}
-			if(spec.center.y >= 574)
+			if(spec.center.y >= 456)
 			{
 				spec.center.y = -30;
 			}
 			else if(spec.center.y <= -30)
 			{
-				spec.center.y = 574;
+				spec.center.y = 456;
 			}
 		};
-
-		that.moveLeft = function(elapsedTime) {
-			spec.center.x -= spec.moveRate * (elapsedTime / 1000);
-		};
 		
-		that.moveRight = function(elapsedTime) {
-			spec.center.x += spec.moveRate * (elapsedTime / 1000);
-		};
-		
-		that.moveUp = function(elapsedTime) {
-			spec.center.y -= spec.moveRate * (elapsedTime / 1000);
-		};
-		
-		that.moveDown = function(elapsedTime) {
-			spec.center.y += spec.moveRate * (elapsedTime / 1000);
-		};
 
 		that.fire = function() {
 			return {
@@ -115,39 +225,12 @@ space.graphics = (function() {
 		};
 		
 		return that;
-	}
-	function projectile(spec) {
-		var that = {};
-
-		that.accelerate = function(elapsedTime) {
-			var newX = Math.cos(spec.rotation);
-			var newY = Math.sin(spec.rotation);
-			spec.center.x += spec.moveRate * (elapsedTime / 1000) * newX;
-			spec.center.y += spec.moveRate * (elapsedTime / 1000) * newY;
-		};
-
-		that.draw = function() {
-			context.save();
-			
-			context.translate(spec.center.x, spec.center.y);
-			context.rotate(spec.rotation);
-			context.translate(-spec.center.x, -spec.center.y);
-			
-			context.drawImage(
-				spec.image, 
-				spec.center.x - spec.width/2, 
-				spec.center.y - spec.height/2);//,
-				//spec.width, spec.height);
-			
-			context.restore();
-		};
-		return that;
-	}
-
-
+	};
 	return {
+		drawImage : drawImage,
+		particleSystem : particleSystem,
 		clear : clear,
-		Texture : Texture,
-		projectile : projectile
+		ship : ship
+	
 	};
 }());

@@ -1,33 +1,87 @@
-<html>
-	<head>
-		<title>Watch Yourself</title>
-		<link rel="stylesheet" type="text/css" href="stylesheets/styles.css">
-		<script src = "scripts/modernizr.js"></script>
-		<script src = "scripts/loader.js"></script>
-	</head>
-	<body>
-		<div id = "spaceDiv" class = "mainDisplay displayed selectDisable">
-			<canvas id = "gameCanvas" width = "820" height = "544"></canvas>
-			<div id = "scorediv">
-				<div>
-					This Level:<br/><span id = "levelScore"></span>
-				</div>
-				<div>
-					Overall: <br/><span id = "totalScore"></span>
-				</div>
-			</div>
-			<div class="clearer"></div>
+<!--   Base code by Dr. Mathias Modified by Kenneth Parkinson -->
+<!DOCTYPE HTML>
+<html lang = "en-US">
+<head>
+	<meta charset = "UTF-8">
+	<title>Game State Demo</title>
+	<link rel = "stylesheet" type = "text/css" href = "game.css">
+	<script src = "scripts/modernizr.js"></script>
+	<script src = "scripts/loader.js"></script>
+</head>
+<body>
+	<div id = "game">
+		<div id = "main-menu" class = "screen">
+			<ul class = "menu">
+				<li><button id = "id-new-game">New&nbsp;Game</button></li>
+				<li><button id = "id-high-scores">High&nbsp;Scores</button></li>
+				<li><button id = "id-help">Help</button></li>
+				<li><button id = "id-about">About</button></li>
+			</ul>
 		</div>
-		<div id = "highScoreDiv" class = "mainDisplay selectDisable"></div>
-		<div id = "creditsDiv" class = "mainDisplay selectDisable">
-		<h3>Designer: Bryce Nelson</h3>
-		<h3>Imparter of Wisdom: Dean Mathias</h3>
-		<h3>Taskmaster: Julise Nelson</h3>
-		<h3>Cute Distraction Manager: Adelia Nelson</h3>
+		<div id = "game-play" class = "screen">
+			<canvas id = "canvas-main" width = "640" height = "426"></canvas>
 		</div>
-		<button onclick = "space.gameStart()">New Game </button>
-		<button onclick = "">Continue</button>
-		<button onclick = "">High Scores </button>
-		<button onclick = "">Credits </button>
-	</body>
+		<div id = "level2" class = "screen">
+			<canvas id = "canvas-main" width = "640" height = "426"></canvas>
+		</div>
+		<div id = "high-scores" class = "screen">
+			<table>
+				<tr>
+					<td>
+							<h1>All Time High Scores</h1>
+						<ol>
+							<li id="totalscore1">0000</li>
+							<li id="totalscore2">0000</li>
+							<li id="totalscore3">0000</li>
+						</ol>
+					</td>
+					<td>
+							<h1>Level 1 High Scores</h1>
+						<ol>
+							<li id="lvl1score1">0000</li>
+							<li id="lvl1score2">0000</li>
+							<li id="lvl1score3">0000</li>
+						</ol>
+					</td>
+				</tr>
+				<tr>
+					<td>
+							<h1>Level 2 High Scores</h1>
+						<ol>
+							<li id="lvl2score1">0000</li>
+							<li id="lvl2score2">0000</li>
+							<li id="lvl2score3">0000</li>
+						</ol>
+					</td>
+					<td>
+							<h1>Level 3 High Scores</h1>
+						<ol>
+							<li id="lvl3score1">0000</li>
+							<li id="lvl3score2">0000</li>
+							<li id="lvl3score3">0000</li>
+						</ol>
+					</td>
+				</tr>
+			</table>
+			<ul class = "menu">
+				<li><button id = "id-high-scores-back">Back</button></li>
+			</ul>
+		</div>
+		<div id = "help" class = "screen">
+			<h1>Help</h1>
+			<p>Click the US Dollar and Roman coin to earn points, aviod the Canadian dollars they will reset your score. Click the clock for a few more coins to help you get past the level.</p>
+			<ul class = "menu">
+				<li><button id = "id-help-back">Back</button></li>
+			</ul>
+		</div>
+		<div id = "about" class = "screen">
+			<h1>About</h1>
+			<p>Developed by Kenneth Parkinson</p>
+			<p>tutelage and base code by Dr. James Dean Mathias</p>
+			<ul class = "menu">
+				<li><button id = "id-about-back">Back</button></li>
+			</ul>
+		</div>
+	</div>
+</body>
 </html>

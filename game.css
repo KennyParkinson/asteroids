@@ -1,0 +1,109 @@
+body
+{
+	margin: 0;
+}
+
+#game
+{
+	position: absolute;
+	left: 0;
+	top: 0;
+	background-image:url("images/background.jpg");
+	background-size:640px 426px;
+	background-repeat:no-repeat;
+	width: 640px;
+	height: 426px;
+	font-size: 40px;
+}
+
+#game .screen
+{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	display: none;
+	z-index: 10;
+}
+
+#game .screen.active
+{
+	display: block;
+}
+
+#main-menu
+{
+	padding-top: 1em;
+	cursor: pointer;
+	font-size: 0.75em;
+}
+
+ul.menu
+{
+	text-align: center;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+ul.menu li
+{
+	margin: 0.8em 0;
+}
+
+ul.menu li button
+{
+	font-family: Arial, sans-serif;
+	font-size: 0.6em;
+	color: #000000;
+	width: 10em;
+	height: 1.5em;
+	background: #FFFF00;
+	border: 0.1em solid rgb(255, 225, 102);
+	border-radius: 0.5em;
+	box-shadow: 0.2em 0.2em 0.3em rgb(0, 0, 0);
+}
+
+ul.menu li button:hover
+{
+	background: #ECEC4F;
+}
+
+ul.menu li button:active
+{
+	color: #CECEF6;
+	background: rgb(0, 0, 0);
+}
+
+#game div h1
+{
+	font-size: 1em;
+	text-align: center;
+	color: orange;
+}
+
+#high-scores ol
+{
+	text-align: center;
+	color: yellow;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+#game div p
+{
+	font-size: 0.5em;
+}
+
+#about p
+{
+	text-align: center;
+	color: yellow;
+}
+#help{
+	color: yellow;
+}
+table{
+	font-size: 30px;
+}
+
