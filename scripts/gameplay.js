@@ -84,6 +84,10 @@ SPACE.screens['game-play'] = (function() {
 	
 	function run() {
 		SPACE.lastTimeStamp = performance.now();
+		//--------------------------------------------------------------
+		//	Here we can reset the game state to start a new game
+		//--------------------------------------------------------------
+
 		//
 		// Start the animation loop
 		cancelNextRequest = false;
