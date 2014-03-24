@@ -11,6 +11,9 @@ SPACE.screens['game-play'] = (function() {
 		myMouse = SPACE.input.Mouse(),
 		myKeyboard = SPACE.input.Keyboard(),
 		myShip = null,
+		missile1 = null,
+		missile2 = null,
+		missile3 = null,
 		cancelNextRequest = false,
 		activeObjects = [];
 	
@@ -23,6 +26,7 @@ SPACE.screens['game-play'] = (function() {
 				image : SPACE.images['images/spaceship.png'],
 				center : { x : 320, y : 213 },
 				width : 60, height : 60,
+				active : true, 			// if object should be displayed
 				vector : 0,             // magnitude of the vector
 				vectorx : 0,			// the x of vector
 				vectory : 0,			// the y of vector
@@ -32,6 +36,53 @@ SPACE.screens['game-play'] = (function() {
 				moveRate : 10,			// pixels per second
 				rotateRate : 3.14159	// Radians per second
 			});
+		//---------------------------------------------------
+		//	All 3 missiles
+		//---------------------------------------------------
+		missile1 = SPACE.graphics.missile( {
+				image : SPACE.images['images/projectile.png'],
+				center : { x : 0, y : 0},
+				width : 60, height : 60,
+				active : false,			// if object should be displayed 
+				vector : 0,             // magnitude of the vector
+				vectorx : 0,			// the x of vector
+				vectory : 0,			// the y of vector
+				lastx : 0,				// drift x
+				lasty : 0, 				// drift y
+				rotation : 0,			// radians going clock wise
+				moveRate : 10,			// pixels per second
+				rotateRate : 3.14159	// Radians per second
+		});
+		missile2 = SPACE.graphics.missile( {
+				image : SPACE.images['images/projectile.png'],
+				center : { x : 0, y : 0},
+				width : 60, height : 60,
+				active : false,			// if object should be displayed 
+				vector : 0,             // magnitude of the vector
+				vectorx : 0,			// the x of vector
+				vectory : 0,			// the y of vector
+				lastx : 0,				// drift x
+				lasty : 0, 				// drift y
+				rotation : 0,			// radians going clock wise
+				moveRate : 10,			// pixels per second
+				rotateRate : 3.14159	// Radians per second
+		});
+		
+		missile3 = SPACE.graphics.missile( {
+				image : SPACE.images['images/projectile.png'],
+				center : { x : 0, y : 0},
+				width : 60, height : 60,
+				active : false,			// if object should be displayed 
+				vector : 0,             // magnitude of the vector
+				vectorx : 0,			// the x of vector
+				vectory : 0,			// the y of vector
+				lastx : 0,				// drift x
+				lasty : 0, 				// drift y
+				rotation : 0,			// radians going clock wise
+				moveRate : 10,			// pixels per second
+				rotateRate : 3.14159	// Radians per second
+		});
+
 		// Array of live objects on the field
 		activeObjects = [];
 		
@@ -74,9 +125,12 @@ SPACE.screens['game-play'] = (function() {
 		//--------------------------------------------------------------
 		SPACE.graphics.clear();
 		myShip.draw();
-		
-		
-		
+		for(var i = 0 ; i < activeObjects.length ; i++){
+			if (activeObjects[i].active === true){
+				activeObjects[i].draw();
+			}
+		}
+
 		if (!cancelNextRequest) {
 			requestAnimationFrame(gameLoop);
 		}
