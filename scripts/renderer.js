@@ -159,23 +159,21 @@ SPACE.graphics = (function() {
 		};
 		
 		that.accelerate = function(elapsedTime) {
-			var speed = 3;
+			var speed = 1;
 			// getting vector total
 			spec.vector = spec.vector + spec.moveRate * (elapsedTime/100000);
+			if (spec.vector > speed){
+				spec.vector = speed;
+			}
+			if (spec.vector < -speed){
+				spec.vector = -speed;
+			}
 			// calculating x vector from total vector
 			spec.vectorx = spec.vectorx + spec.vector * Math.cos(spec.rotation);
-			// limit on x speed
-			if (spec.vectorx > speed )
-				{spec.vectorx = speed;}
-			if (spec.vectorx < -speed )
-				{spec.vectorx = -speed;}
+			
 			// calculating y vector from the total vector
 			spec.vectory = spec.vectory + spec.vector * Math.sin(spec.rotation);
-			// limit on y speed
-			if (spec.vectory > speed )
-				{spec.vectory = speed;}
-			if (spec.vectory < -speed )
-			{spec.vectory = -speed;}
+		
 
 		};
 
@@ -228,46 +226,18 @@ SPACE.graphics = (function() {
 	};
 	function missile(spec) {
 		var that = {};
-		
-		that.rotateRight = function(elapsedTime) {
-			spec.rotation += spec.rotateRate * (elapsedTime / 1000);
-			// if the rotation is greater than 2PI radians +2PI radians
-			if(spec.rotation >= 2*Math.PI)
-				{spec.rotation = spec.rotation - 2*Math.PI;}
+		that.fire = function() {
+			// activiate missile
+			spec.active = true;
+			// set launch coordinates
+			spec.center.x = SPACE.myShip.center.x;
+			spec.center.y = SPACE.myShip.center.y;
 
 		};
-		
-		that.rotateLeft = function(elapsedTime) {
-			spec.rotation -= spec.rotateRate * (elapsedTime / 1000);
-			// if the rotation is less than 2PI radians +2PI radians
-			if(spec.rotation <= 2*Math.PI)
-				{spec.rotation = spec.rotation + 2*Math.PI;}
-		};
-		
-		that.accelerate = function(elapsedTime) {
-			var speed = 3;
-			// getting vector total
-			spec.vector = spec.vector + spec.moveRate * (elapsedTime/100000);
-			// calculating x vector from total vector
-			spec.vectorx = spec.vectorx + spec.vector * Math.cos(spec.rotation);
-			// limit on x speed
-			if (spec.vectorx > speed )
-				{spec.vectorx = speed;}
-			if (spec.vectorx < -speed )
-				{spec.vectorx = -speed;}
-			// calculating y vector from the total vector
-			spec.vectory = spec.vectory + spec.vector * Math.sin(spec.rotation);
-			// limit on y speed
-			if (spec.vectory > speed )
-				{spec.vectory = speed;}
-			if (spec.vectory < -speed )
-			{spec.vectory = -speed;}
-
-		};
-
+			
 		that.update = function() {
-			spec.center.x += spec.vectorx;
-			spec.center.y += spec.vectory;
+			spec.center.x += spec.moveRate * Math.cos(spec.rotation);
+			spec.center.y += spec.moveRate * Math.sin(spec.rotation);
 			if(spec.center.x >= 650)
 			{
 				spec.center.x = -30;
@@ -284,14 +254,6 @@ SPACE.graphics = (function() {
 			{
 				spec.center.y = 456;
 			}
-		};
-		
-
-		that.fire = function() {
-			return {
-				rotation : spec.rotation,
-				location : spec.center
-			};
 		};
 		
 		that.draw = function() {

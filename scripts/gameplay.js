@@ -44,28 +44,16 @@ SPACE.screens['game-play'] = (function() {
 				center : { x : 0, y : 0},
 				width : 60, height : 60,
 				active : false,			// if object should be displayed 
-				vector : 0,             // magnitude of the vector
-				vectorx : 0,			// the x of vector
-				vectory : 0,			// the y of vector
-				lastx : 0,				// drift x
-				lasty : 0, 				// drift y
 				rotation : 0,			// radians going clock wise
 				moveRate : 10,			// pixels per second
-				rotateRate : 3.14159	// Radians per second
 		});
 		missile2 = SPACE.graphics.missile( {
 				image : SPACE.images['images/projectile.png'],
 				center : { x : 0, y : 0},
 				width : 60, height : 60,
 				active : false,			// if object should be displayed 
-				vector : 0,             // magnitude of the vector
-				vectorx : 0,			// the x of vector
-				vectory : 0,			// the y of vector
-				lastx : 0,				// drift x
-				lasty : 0, 				// drift y
 				rotation : 0,			// radians going clock wise
 				moveRate : 10,			// pixels per second
-				rotateRate : 3.14159	// Radians per second
 		});
 		
 		missile3 = SPACE.graphics.missile( {
@@ -73,16 +61,9 @@ SPACE.screens['game-play'] = (function() {
 				center : { x : 0, y : 0},
 				width : 60, height : 60,
 				active : false,			// if object should be displayed 
-				vector : 0,             // magnitude of the vector
-				vectorx : 0,			// the x of vector
-				vectory : 0,			// the y of vector
-				lastx : 0,				// drift x
-				lasty : 0, 				// drift y
 				rotation : 0,			// radians going clock wise
 				moveRate : 10,			// pixels per second
-				rotateRate : 3.14159	// Radians per second
 		});
-
 		// Array of live objects on the field
 		activeObjects = [];
 		
@@ -91,7 +72,20 @@ SPACE.screens['game-play'] = (function() {
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_A, myShip.rotateLeft);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_D, myShip.rotateRight);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_W, myShip.accelerate);
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_SPACE, SPACE.fire);
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_SPACE, function() {
+			//
+			// Check missiles to see if they can be fired and fire first available missile
+			if (missile1.active == false){
+				missile1.fire();
+			}
+			else if (missile2.active == false){
+
+			}
+			else if ( missile3.active == false){
+
+			}
+
+		});
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 			//
 			// Stop the game loop by canceling the request for the next animation frame
