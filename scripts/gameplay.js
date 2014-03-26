@@ -25,7 +25,7 @@ SPACE.screens['game-play'] = (function() {
 		myShip = SPACE.graphics.ship( {
 				image : SPACE.images['images/spaceship.png'],
 				center : { x : 320, y : 213 },
-				width : 60, height : 60,
+				width : 30, height : 30,
 				active : true, 			// if object should be displayed
 				vector : 0,             // magnitude of the vector
 				vectorx : 0,			// the x of vector

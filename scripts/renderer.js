@@ -180,21 +180,21 @@ SPACE.graphics = (function() {
 		that.update = function() {
 			spec.center.x += spec.vectorx;
 			spec.center.y += spec.vectory;
-			if(spec.center.x >= 650)
+			if(spec.center.x >= canvas.width)
 			{
-				spec.center.x = -30;
+				spec.center.x = 0;
 			}
-			else if(spec.center.x <= -30)
+			else if(spec.center.x <= 0)
 			{
-				spec.center.x = 650;
+				spec.center.x = canvas.width;
 			}
-			if(spec.center.y >= 456)
+			if(spec.center.y >= canvas.height)
 			{
-				spec.center.y = -30;
+				spec.center.y = 0;
 			}
-			else if(spec.center.y <= -30)
+			else if(spec.center.y <= 0)
 			{
-				spec.center.y = 456;
+				spec.center.y = canvas.height;
 			}
 		};
 		
