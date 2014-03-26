@@ -148,7 +148,6 @@ SPACE.graphics = (function() {
 			// if the rotation is greater than 2PI radians +2PI radians
 			if(spec.rotation >= 2*Math.PI)
 				{spec.rotation = spec.rotation - 2*Math.PI;}
-
 		};
 		
 		that.rotateLeft = function(elapsedTime) {
@@ -173,8 +172,6 @@ SPACE.graphics = (function() {
 			
 			// calculating y vector from the total vector
 			spec.vectory = spec.vectory + spec.vector * Math.sin(spec.rotation);
-		
-
 		};
 
 		that.update = function() {
@@ -199,11 +196,12 @@ SPACE.graphics = (function() {
 		};
 		
 
-		that.fire = function() {
-			return {
-				rotation : spec.rotation,
-				location : spec.center
-			};
+		that.getcenter = function() {
+			return (spec.center);
+		};
+
+		that.gettraj = function() {
+			return (spec.rotation);
 		};
 		
 		that.draw = function() {
@@ -226,33 +224,45 @@ SPACE.graphics = (function() {
 	};
 	function missile(spec) {
 		var that = {};
-		that.fire = function() {
+		that.fire = function(shipcoords, shiptraj) {
 			// activiate missile
 			spec.active = true;
+			spec.lifetime = performance.now();
 			// set launch coordinates
-			spec.center.x = SPACE.myShip.center.x;
-			spec.center.y = SPACE.myShip.center.y;
+			spec.center.x = shipcoords.x;
+			spec.center.y = shipcoords.y;
+			// set trajectory
+			spec.rotation = shiptraj;
 
+		};
+		that.fired = function() {
+			return(spec.active);
 		};
 			
 		that.update = function() {
+			// if lifetime is past then disappear
+			if(performance.now() > 1600 + spec.lifetime){
+				spec.active = false;
+				spec.lifetime = 0;
+			}
+			// moving missile to new coordinates
 			spec.center.x += spec.moveRate * Math.cos(spec.rotation);
 			spec.center.y += spec.moveRate * Math.sin(spec.rotation);
-			if(spec.center.x >= 650)
+			if(spec.center.x >= canvas.width)
 			{
-				spec.center.x = -30;
+				spec.center.x = 0;
 			}
-			else if(spec.center.x <= -30)
+			else if(spec.center.x <= 0)
 			{
-				spec.center.x = 650;
+				spec.center.x = canvas.width;
 			}
-			if(spec.center.y >= 456)
+			if(spec.center.y >= canvas.height)
 			{
-				spec.center.y = -30;
+				spec.center.y = 0;
 			}
-			else if(spec.center.y <= -30)
+			else if(spec.center.y <= 0)
 			{
-				spec.center.y = 456;
+				spec.center.y = canvas.height;
 			}
 		};
 		

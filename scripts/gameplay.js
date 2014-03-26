@@ -15,7 +15,8 @@ SPACE.screens['game-play'] = (function() {
 		missile2 = null,
 		missile3 = null,
 		cancelNextRequest = false,
-		activeObjects = [];
+		missiles = [],
+		lastfire = 0
 	
 	function initialize() {
 		console.log('game initializing...');
@@ -39,33 +40,38 @@ SPACE.screens['game-play'] = (function() {
 		//---------------------------------------------------
 		//	All 3 missiles
 		//---------------------------------------------------
+		var missilespeed = 1;
 		missile1 = SPACE.graphics.missile( {
 				image : SPACE.images['images/projectile.png'],
 				center : { x : 0, y : 0},
-				width : 60, height : 60,
+				width : 10, height : 10,
+				lifetime : 0,			// time to check against performance.now() for lifetime
 				active : false,			// if object should be displayed 
 				rotation : 0,			// radians going clock wise
-				moveRate : 10,			// pixels per second
+				moveRate : missilespeed,			// pixels per second
 		});
+
 		missile2 = SPACE.graphics.missile( {
 				image : SPACE.images['images/projectile.png'],
 				center : { x : 0, y : 0},
-				width : 60, height : 60,
+				width : 10, height : 10,
+				lifetime : 0,			// time to check against performance.now() for lifetime
 				active : false,			// if object should be displayed 
 				rotation : 0,			// radians going clock wise
-				moveRate : 10,			// pixels per second
+				moveRate : missilespeed,			// pixels per second
 		});
 		
 		missile3 = SPACE.graphics.missile( {
 				image : SPACE.images['images/projectile.png'],
 				center : { x : 0, y : 0},
-				width : 60, height : 60,
+				width : 10, height : 10,
+				lifetime : 0,			// time to check against performance.now() for lifetime
 				active : false,			// if object should be displayed 
 				rotation : 0,			// radians going clock wise
-				moveRate : 10,			// pixels per second
+				moveRate : missilespeed,			// pixels per second
 		});
 		// Array of live objects on the field
-		activeObjects = [];
+		missiles = [];
 		
 		//---------------------------------------------------------------------
 		// Create the keyboard input handler and register the keyboard commands
@@ -73,16 +79,26 @@ SPACE.screens['game-play'] = (function() {
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_D, myShip.rotateRight);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_W, myShip.accelerate);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_SPACE, function() {
-			//
-			// Check missiles to see if they can be fired and fire first available missile
-			if (missile1.active == false){
-				missile1.fire();
-			}
-			else if (missile2.active == false){
+			console.log("space");
+			// enough time has elapsed since last missile fire
+			if (performance.now() >lastfire + 400){
+				lastfire = performance.now();
 
-			}
-			else if ( missile3.active == false){
+				//
+				// Check missiles to see if they can be fired and fire first available missile
 
+				if (missile1.fired() === false){
+					missile1.fire(myShip.getcenter(), myShip.gettraj());
+					console.log("launching missile 1");
+				}
+				else if (missile2.fired(myShip.getcenter(), myShip.gettraj()) === false){
+					missile2.fire(myShip.getcenter(), myShip.gettraj());
+					console.log("launching missile 2");
+				}
+				else if ( missile3.fired(myShip.getcenter(), myShip.gettraj()) === false){
+					missile3.fire(myShip.getcenter(), myShip.gettraj());
+					console.log("launching missile 3");
+				}
 			}
 
 		});
@@ -96,7 +112,9 @@ SPACE.screens['game-play'] = (function() {
 		});
 
 		// Adding Ship to the active Objects array
-		activeObjects.push(myShip);
+		missiles.push(missile1);
+		missiles.push(missile2);
+		missiles.push(missile3);
 
 	}
 	
@@ -113,15 +131,23 @@ SPACE.screens['game-play'] = (function() {
 		//  	Update Everything
 		//--------------------------------------------------------------
 		myShip.update();
+		for(var i = 0 ; i < missiles.length ; i++){
+			if (missiles[i].fired() === true){
+				missiles[i].update();
+			}
+			
+		}
+
 		myKeyboard.update(SPACE.elapsedTime);
+
 		//--------------------------------------------------------------
 		//			Render Everything
 		//--------------------------------------------------------------
 		SPACE.graphics.clear();
 		myShip.draw();
-		for(var i = 0 ; i < activeObjects.length ; i++){
-			if (activeObjects[i].active === true){
-				activeObjects[i].draw();
+		for(var i = 0 ; i < missiles.length ; i++){
+			if (missiles[i].fired() === true){
+				missiles[i].draw();
 			}
 		}
 
