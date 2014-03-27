@@ -1,15 +1,15 @@
 /*jslint browser: true, white: true, plusplus: true */
-/*global SPACE, console, KeyEvent, requestAnimationFrame, performance */
+/*global SPACEGAME, console, KeyEvent, requestAnimationFrame, performance */
 //
 //			Base code by Dr. Mathias
 //				Modified by Kenneth Parkinson
 //
-SPACE.screens['game-play'] = (function() {
+SPACEGAME.screens['game-play'] = (function() {
 	'use strict';
 	
 	var mouseCapture = false,
-		myMouse = SPACE.input.Mouse(),
-		myKeyboard = SPACE.input.Keyboard(),
+		myMouse = SPACEGAME.input.Mouse(),
+		myKeyboard = SPACEGAME.input.Keyboard(),
 		myShip = null,
 		missile1 = null,
 		missile2 = null,
@@ -23,9 +23,9 @@ SPACE.screens['game-play'] = (function() {
 		//--------------------------------------------------
 		// This is the Ship Object
 		//--------------------------------------------------
-		myShip = SPACE.graphics.ship( {
-				image : SPACE.images['images/spaceship.png'],
-				center : { x : 320, y : 213 },
+		myShip = SPACEGAME.graphics.ship( {
+				image : SPACEGAME.images['images/spaceship.png'],
+				center : { x : 250, y : 250 },
 				width : 30, height : 30,
 				active : true, 			// if object should be displayed
 				vector : 0,             // magnitude of the vector
@@ -40,9 +40,9 @@ SPACE.screens['game-play'] = (function() {
 		//---------------------------------------------------
 		//	All 3 missiles
 		//---------------------------------------------------
-		var missilespeed = 1;
-		missile1 = SPACE.graphics.missile( {
-				image : SPACE.images['images/projectile.png'],
+		var missilespeed = 4;
+		missile1 = SPACEGAME.graphics.missile( {
+				image : SPACEGAME.images['images/projectile.png'],
 				center : { x : 0, y : 0},
 				width : 10, height : 10,
 				lifetime : 0,			// time to check against performance.now() for lifetime
@@ -51,8 +51,8 @@ SPACE.screens['game-play'] = (function() {
 				moveRate : missilespeed,			// pixels per second
 		});
 
-		missile2 = SPACE.graphics.missile( {
-				image : SPACE.images['images/projectile.png'],
+		missile2 = SPACEGAME.graphics.missile( {
+				image : SPACEGAME.images['images/projectile.png'],
 				center : { x : 0, y : 0},
 				width : 10, height : 10,
 				lifetime : 0,			// time to check against performance.now() for lifetime
@@ -61,8 +61,8 @@ SPACE.screens['game-play'] = (function() {
 				moveRate : missilespeed,			// pixels per second
 		});
 		
-		missile3 = SPACE.graphics.missile( {
-				image : SPACE.images['images/projectile.png'],
+		missile3 = SPACEGAME.graphics.missile( {
+				image : SPACEGAME.images['images/projectile.png'],
 				center : { x : 0, y : 0},
 				width : 10, height : 10,
 				lifetime : 0,			// time to check against performance.now() for lifetime
@@ -78,29 +78,28 @@ SPACE.screens['game-play'] = (function() {
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_A, myShip.rotateLeft);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_D, myShip.rotateRight);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_W, myShip.accelerate);
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_SPACE, function() {
-			console.log("space");
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_F, function() {
 			// enough time has elapsed since last missile fire
-			if (performance.now() >lastfire + 400){
-				lastfire = performance.now();
-
+			if (performance.now() > lastfire + 500){
 				//
 				// Check missiles to see if they can be fired and fire first available missile
 
 				if (missile1.fired() === false){
-					missile1.fire(myShip.getcenter(), myShip.gettraj());
-					console.log("launching missile 1");
+					lastfire = performance.now();
+					missile1.fire(myShip.getcenter(), myShip.gettraj(), myShip.getspeed());
+					console.log("launch missile 1");
 				}
-				else if (missile2.fired(myShip.getcenter(), myShip.gettraj()) === false){
-					missile2.fire(myShip.getcenter(), myShip.gettraj());
-					console.log("launching missile 2");
+				else if (missile2.fired() === false){
+					lastfire = performance.now();
+					missile2.fire(myShip.getcenter(), myShip.gettraj(), myShip.getspeed());
+					console.log("launch missile 2");
 				}
-				else if ( missile3.fired(myShip.getcenter(), myShip.gettraj()) === false){
-					missile3.fire(myShip.getcenter(), myShip.gettraj());
-					console.log("launching missile 3");
+				else if ( missile3.fired() === false){
+					lastfire = performance.now();
+					missile3.fire(myShip.getcenter(), myShip.gettraj(), myShip.getspeed());
+					console.log("launch missile 3");
 				}
 			}
-
 		});
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 			//
@@ -108,7 +107,7 @@ SPACE.screens['game-play'] = (function() {
 			cancelNextRequest = true;
 			//
 			// Then, return to the main menu
-			SPACE.game.showScreen('main-menu');
+			SPACEGAME.game.showScreen('main-menu');
 		});
 
 		// Adding Ship to the active Objects array
@@ -124,12 +123,14 @@ SPACE.screens['game-play'] = (function() {
 	//
 	//------------------------------------------------------------------
 	function gameLoop(time) {
-		SPACE.elapsedTime = time - SPACE.lastTimeStamp;
-		SPACE.lastTimeStamp = time;
+		SPACEGAME.elapsedTime = time - SPACEGAME.lastTimeStamp;
+		SPACEGAME.lastTimeStamp = time;
 		
 		//--------------------------------------------------------------
 		//  	Update Everything
 		//--------------------------------------------------------------
+
+		myKeyboard.update(SPACEGAME.elapsedTime);
 		myShip.update();
 		for(var i = 0 ; i < missiles.length ; i++){
 			if (missiles[i].fired() === true){
@@ -138,12 +139,10 @@ SPACE.screens['game-play'] = (function() {
 			
 		}
 
-		myKeyboard.update(SPACE.elapsedTime);
-
 		//--------------------------------------------------------------
 		//			Render Everything
 		//--------------------------------------------------------------
-		SPACE.graphics.clear();
+		SPACEGAME.graphics.clear();
 		myShip.draw();
 		for(var i = 0 ; i < missiles.length ; i++){
 			if (missiles[i].fired() === true){
@@ -157,7 +156,7 @@ SPACE.screens['game-play'] = (function() {
 	}
 	
 	function run() {
-		SPACE.lastTimeStamp = performance.now();
+		SPACEGAME.lastTimeStamp = performance.now();
 		//--------------------------------------------------------------
 		//	Here we can reset the game state to start a new game
 		//--------------------------------------------------------------

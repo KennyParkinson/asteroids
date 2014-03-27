@@ -25,7 +25,7 @@ game engine/systems
 	particle framework
 	audio
 	collisions
-		Here's the objects, tell 			me what collided.
+		Here's the objects, tell me what collided.
 Rendering
 input
 networking

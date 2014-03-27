@@ -1,5 +1,5 @@
 /*jslint browser: true, white: true, plusplus: true */
-/*global SPACE */
+/*global SPACEGAME */
 // ------------------------------------------------------------------
 // 				Base code courtesy of Dr. Mathias
 //						Modified by Kenneth Parkinson
@@ -10,7 +10,7 @@
 // ------------------------------------------------------------------
 
 
-SPACE.game = (function() {
+SPACEGAME.game = (function() {
 	'use strict';
 	
 	function showScreen(id) {
@@ -24,7 +24,7 @@ SPACE.game = (function() {
 		}
 		//
 		// Tell the screen to start actively running
-		SPACE.screens[id].run();
+		SPACEGAME.screens[id].run();
 		//
 		// Then, set the new screen to be active
 		document.getElementById(id).classList.add('active');
@@ -39,9 +39,9 @@ SPACE.game = (function() {
 		var screen = null;
 		//
 		// Go through each of the screens and tell them to initialize
-		for (screen in SPACE.screens) {
-			if (SPACE.screens.hasOwnProperty(screen)) {
-				SPACE.screens[screen].initialize();
+		for (screen in SPACEGAME.screens) {
+			if (SPACEGAME.screens.hasOwnProperty(screen)) {
+				SPACEGAME.screens[screen].initialize();
 			}
 		}
 		
