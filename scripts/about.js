@@ -1,12 +1,12 @@
 /*jslint browser: true, white: true, plusplus: true */
-/*global SPACE */
-SPACE.screens['about'] = (function() {
+/*global SPACEGAME */
+SPACEGAME.screens['about'] = (function() {
 	'use strict';
 	
 	function initialize() {
 		document.getElementById('id-about-back').addEventListener(
 			'click',
-			function() { SPACE.game.showScreen('main-menu'); },
+			function() { SPACEGAME.game.showScreen('main-menu'); },
 			false);
 	}
 	

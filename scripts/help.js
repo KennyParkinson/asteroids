@@ -1,15 +1,15 @@
 /*jslint browser: true, white: true, plusplus: true */
-/*global SPACE */
+/*global SPACEGAME */
 // Base code courtesy of Dr. Mathias
 //		Modified by Kenneth Parkinson
 //
-SPACE.screens['help'] = (function() {
+SPACEGAME.screens['help'] = (function() {
 	'use strict';
 	
 	function initialize() {
 		document.getElementById('id-help-back').addEventListener(
 			'click',
-			function() { SPACE.game.showScreen('main-menu'); },
+			function() { SPACEGAME.game.showScreen('main-menu'); },
 			false);
 	}
 	

@@ -1,4 +1,4 @@
-var SPACE = {
+var SPACEGAME = {
 	images : {},
 	screens : {},
 
@@ -53,22 +53,22 @@ window.addEventListener('load', function() {
 yepnope.addPrefix('preload', function(resource) {
 	console.log('preloading: ' + resource.url);
 	
-	SPACE.status.preloadRequest += 1;
+	SPACEGAME.status.preloadRequest += 1;
 	var isImage = /.+\.(jpg|png|gif)$/i.test(resource.url);
 	resource.noexec = isImage;
 	resource.autoCallback = function(e) {
 		if (isImage) {
 			var image = new Image();
 			image.src = resource.url;
-			SPACE.images[resource.url] = image;
+			SPACEGAME.images[resource.url] = image;
 		}
-		SPACE.status.preloadComplete += 1;
+		SPACEGAME.status.preloadComplete += 1;
 		
 		//
 		// When everything has finished preloading, go ahead and start the game
-		if (SPACE.status.preloadComplete === SPACE.status.preloadRequest) {
+		if (SPACEGAME.status.preloadComplete === SPACEGAME.status.preloadRequest) {
 			console.log('Preloading complete!');
-			SPACE.game.initialize();
+			SPACEGAME.game.initialize();
 		}
 	};
 	

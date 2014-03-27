@@ -1,11 +1,11 @@
 /*jslint browser: true, white: true */
-/*global SPACE */
+/*global SPACEGAME */
 // ------------------------------------------------------------------
 //
 // Base code courtesy of Dr. Mathias
 //			Modified by Kenneth Parkinson
 // ------------------------------------------------------------------
-SPACE.input = (function() {
+SPACEGAME.input = (function() {
 	'use strict';
 	
 	function Mouse() {

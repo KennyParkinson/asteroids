@@ -1,5 +1,5 @@
 /*jslint browser: true, white: true */
-/*global CanvasRenderingContext2D, requestAnimationFrame, console, SPACE */
+/*global CanvasRenderingContext2D, requestAnimationFrame, console, SPACEGAME */
 // ------------------------------------------------------------------
 //  Base code courtesy of Dean Mathias has been modified by Kenneth Parkinson
 //
@@ -7,7 +7,7 @@
 // this object.
 //
 // ------------------------------------------------------------------
-SPACE.graphics = (function() {
+SPACEGAME.graphics = (function() {
 	'use strict';
 	
 	var canvas = document.getElementById('canvas-main'),
@@ -130,7 +130,7 @@ SPACE.graphics = (function() {
 			for (value in particles) {
 				if (particles.hasOwnProperty(value)) {
 					particle = particles[value];
-					SPACE.graphics.drawImage(particle);
+					SPACEGAME.graphics.drawImage(particle);
 				}
 			}
 		};
@@ -160,7 +160,7 @@ SPACE.graphics = (function() {
 		that.accelerate = function(elapsedTime) {
 			var speed = 1;
 			// getting vector total
-			spec.vector = spec.vector + spec.moveRate * (elapsedTime/100000);
+			spec.vector = spec.vector + spec.moveRate;
 			if (spec.vector > speed){
 				spec.vector = speed;
 			}
@@ -195,13 +195,16 @@ SPACE.graphics = (function() {
 			}
 		};
 		
-
 		that.getcenter = function() {
 			return (spec.center);
 		};
 
 		that.gettraj = function() {
 			return (spec.rotation);
+		};
+
+		that.getspeed = function() {
+			return (spec.vector);
 		};
 		
 		that.draw = function() {
@@ -224,7 +227,7 @@ SPACE.graphics = (function() {
 	};
 	function missile(spec) {
 		var that = {};
-		that.fire = function(shipcoords, shiptraj) {
+		that.fire = function(shipcoords, shiptraj, shipspeed) {
 			// activiate missile
 			spec.active = true;
 			spec.lifetime = performance.now();
@@ -233,6 +236,8 @@ SPACE.graphics = (function() {
 			spec.center.y = shipcoords.y;
 			// set trajectory
 			spec.rotation = shiptraj;
+			// set launch speed
+			spec.moveRate = 10 + shipspeed;
 		};
 
 		that.fired = function() {
@@ -241,7 +246,7 @@ SPACE.graphics = (function() {
 			
 		that.update = function() {
 			// if lifetime is past then disappear
-			if(performance.now() > 1600 + spec.lifetime){
+			if(performance.now() > 400 + spec.lifetime){
 				spec.active = false;
 				spec.lifetime = 0;
 			}
