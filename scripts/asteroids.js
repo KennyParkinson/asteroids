@@ -10,6 +10,7 @@ space.initialize = function() {
 	space.elapsedTime = 0,
 	space.lastTimeStamp = performance.now(),
 	space.myKeyboard = space.input.Keyboard();
+	space.level = 1;
 };
 space.gameStart = function() {
 	space.myShip = space.graphics.Texture( {
@@ -32,6 +33,13 @@ space.gameStart = function() {
 	space.myKeyboard.registerCommand(KeyEvent.DOM_VK_SPACE, space.fire);
 	space.activeObjects.push(space.myShip);
 	requestAnimationFrame(space.gameLoop);
+	space.numAsteroids = (Random.nextGaussian(space.level*10, 3));
+	for (var i = 0; i < space.numAsteroids; ++i) {
+		asteroid = space.graphics.asteroid({
+
+		});
+		space.asteroids.push(asteroid);
+	};
 };
 space.gameLoop = function(time) {
 	space.elapsedTime = time - space.lastTimeStamp;

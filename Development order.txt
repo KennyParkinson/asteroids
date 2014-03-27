@@ -9,9 +9,9 @@ develop game systems first, then game code
 
 
 MILESTONES:
-	1. move the ship, wraps 		around, renders
-	2. objects moving, 			  collisions, projectiles, particles
-	3.AI
+	1. move the ship, wraps around, renders
+	2. objects moving, collisions, projectiles, particles
+	3. AI
 
 game code
 	physics?
@@ -57,3 +57,21 @@ audio
 	menu navigation
 	ship sounds
 rendering
+
+Collision Detection:
+	Use a sphere
+	Test on a polygon by polygon basis
+	Bounding box (similar to sphere)
+	Axis Aligned Bounding box
+	subdivision methods
+
+	Polygon v polygon:
+		split polygon into triangles, compare all triangles in one polygon against all polygons in another
+	Bounding Box:
+		Define a box around an object that defines the area it takes up. test box vs. box. As the object rotates, rotate the box as well
+	Axis aligned BB: 
+		Bounding box stays aligned with x and y axes. No rotating of the box. Less complex computation in box vs. box intersection.
+	Circle:
+		Compare the distance between the two centers of the objects vs the combined radii of each object
+	Subdivision:
+		Draw smaller circles inside the larger circles to  compensate for the irregularity of the object.
