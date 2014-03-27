@@ -233,8 +233,8 @@ SPACE.graphics = (function() {
 			spec.center.y = shipcoords.y;
 			// set trajectory
 			spec.rotation = shiptraj;
-
 		};
+
 		that.fired = function() {
 			return(spec.active);
 		};

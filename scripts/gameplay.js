@@ -81,26 +81,28 @@ SPACE.screens['game-play'] = (function() {
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_SPACE, function() {
 			console.log("space");
 			// enough time has elapsed since last missile fire
-			if (performance.now() >lastfire + 400){
-				lastfire = performance.now();
+			if (performance.now() > lastfire + 400){
+				
 
 				//
 				// Check missiles to see if they can be fired and fire first available missile
 
 				if (missile1.fired() === false){
+					lastfire = performance.now();
 					missile1.fire(myShip.getcenter(), myShip.gettraj());
 					console.log("launching missile 1");
 				}
-				else if (missile2.fired(myShip.getcenter(), myShip.gettraj()) === false){
+				else if (missile2.fired() === false){
+					lastfire = performance.now();
 					missile2.fire(myShip.getcenter(), myShip.gettraj());
 					console.log("launching missile 2");
 				}
-				else if ( missile3.fired(myShip.getcenter(), myShip.gettraj()) === false){
+				else if ( missile3.fired() === false){
+					lastfire = performance.now();
 					missile3.fire(myShip.getcenter(), myShip.gettraj());
 					console.log("launching missile 3");
 				}
 			}
-
 		});
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
 			//
