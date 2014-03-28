@@ -143,6 +143,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		missiles.push(missile1);
 		missiles.push(missile2);
 		missiles.push(missile3);
+		missiles.push(missile4);
 		var numAsteroids = level * Random.nextGaussian(6,2);
 		if(numAsteroids < 0)
 		{
@@ -167,7 +168,7 @@ SPACEGAME.screens['game-play'] = (function() {
 			asteroids.push(asteroid);
 		}
 
-		missiles.push(missile4);
+		
 
 	}
 	

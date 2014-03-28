@@ -225,7 +225,6 @@ SPACEGAME.graphics = (function() {
 		that.fire = function(shipcoords, shiptraj, shipspeed) {
 			// activiate missile
 			spec.active = true;
-			spec.lifetime = performance.now();
 			// set launch coordinates
 			spec.center.x = shipcoords.x;
 			spec.center.y = shipcoords.y;
@@ -240,7 +239,7 @@ SPACEGAME.graphics = (function() {
 		that.update = function(elapsedTime) {
 			// if lifetime is past then disappear
 			spec.lifetime += elapsedTime/1000
-			if(spec.lifetime > 4){
+			if(spec.lifetime > 3){
 				spec.active = false;
 				spec.lifetime = 0;
 			}
