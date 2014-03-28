@@ -14,12 +14,19 @@ SPACEGAME.screens['game-play'] = (function() {
 		missile1 = null,
 		missile2 = null,
 		missile3 = null,
+		missile4 = null,
+		bigAsteroid1 = null,
+		bigAsteroid2 = null,
+		midAsteroid1 = null,
+		midAsteroid2 = null,
+		midAsteroid3 = null,
 		cancelNextRequest = false,
 		missiles = [],
 		asteroids = [],
 		lastfire = 0,
 		level = 1,
 		canvas = document.getElementById('canvas-main')
+		lastfire = 0
 	
 	function initialize() {
 		console.log('game initializing...');
@@ -74,17 +81,76 @@ SPACEGAME.screens['game-play'] = (function() {
 				rotation : 0,			// radians going clock wise
 				moveRate : missilespeed,			// pixels per second
 		});
-		// Array of live objects on the field
+
+		missile4 = SPACEGAME.graphics.missile( {
+				image : SPACEGAME.images['images/projectile.png'],
+				center : { x : 0, y : 0},
+				width : 10, height : 10,
+				lifetime : 0,			// time to check against performance.now() for lifetime
+				active : false,			// if object should be displayed 
+				rotation : 0,			// radians going clock wise
+				moveRate : missilespeed,			// pixels per second
+		});
+
+		bigAsteroid1 = SPACEGAME.graphics.asteroid( {
+				image : SPACEGAME.images['images/bigasteroid.png'],
+				center : { x : 0, y : 250 },
+				width : 100, height : 100,
+				active : true, 			// if object should be displayed
+				rotation : Math.PI,			// radians going clock wise
+				moveRate : .1,		// pixels per second
+				rotateRate : 3.14159	// Radians per second
+		});
+		bigAsteroid2 = SPACEGAME.graphics.asteroid( {
+				image : SPACEGAME.images['images/bigasteroid.png'],
+				center : { x : 250, y : 100 },
+				width : 100, height : 100,
+				active : true, 			// if object should be displayed
+				rotation : Math.PI /4,			// radians going clock wise
+				moveRate : .1,		// pixels per second
+				rotateRate : 3.14159	// Radians per second
+		});
+		midAsteroid1 = SPACEGAME.graphics.asteroid( {
+				image : SPACEGAME.images['images/middleasteroid.png'],
+				center : { x : 1, y : 1 },
+				width : 100, height : 100,
+				active : true, 			// if object should be displayed
+				rotation : Math.PI /6,			// radians going clock wise
+				moveRate : .1,		// pixels per second
+				rotateRate : 3.14159	// Radians per second
+		});
+		midAsteroid2 = SPACEGAME.graphics.asteroid( {
+				image : SPACEGAME.images['images/middleasteroid.png'],
+				center : { x : 350, y : 5 },
+				width : 100, height : 100,
+				active : true, 			// if object should be displayed
+				rotation : Math.PI * 3,			// radians going clock wise
+				moveRate : .1,		// pixels per second
+				rotateRate : 3.14159	// Radians per second
+		});
+		midAsteroid3 = SPACEGAME.graphics.asteroid( {
+				image : SPACEGAME.images['images/middleasteroid.png'],
+				center : { x : 0 , y : 350 },
+				width : 100, height : 100,
+				active : true, 			// if object should be displayed
+				rotation : Math.PI * 6,			// radians going clock wise
+				moveRate : .1,		// pixels per second
+				rotateRate : 3.14159	// Radians per second
+		});
+
+
+		// Arrays of objects on the field
 		missiles = [];
+		asteroids = [];
 		
 		//---------------------------------------------------------------------
 		// Create the keyboard input handler and register the keyboard commands
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_A, myShip.rotateLeft);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_D, myShip.rotateRight);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_W, myShip.accelerate);
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_F, function() {
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_F, function () {
 			// enough time has elapsed since last missile fire
-			if (performance.now() > lastfire + 500){
+			if (performance.now() > lastfire + 150){
 				//
 				// Check missiles to see if they can be fired and fire first available missile
 
@@ -103,9 +169,15 @@ SPACEGAME.screens['game-play'] = (function() {
 					missile3.fire(myShip.getcenter(), myShip.gettraj(), myShip.getspeed());
 					console.log("launch missile 3");
 				}
+				else if ( missile4.fired() === false){
+					lastfire = performance.now();
+					missile4.fire(myShip.getcenter(), myShip.gettraj(), myShip.getspeed());
+					console.log("launch missile 4");
+				}
+				else{console.log("all missiles fired");}
 			}
 		});
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function () {
 			//
 			// Stop the game loop by canceling the request for the next animation frame
 			cancelNextRequest = true;
@@ -114,7 +186,7 @@ SPACEGAME.screens['game-play'] = (function() {
 			SPACEGAME.game.showScreen('main-menu');
 		});
 
-		// Adding Ship to the active Objects array
+		// Adding missiles to missles to the active Objects array
 		missiles.push(missile1);
 		missiles.push(missile2);
 		missiles.push(missile3);
@@ -142,6 +214,8 @@ SPACEGAME.screens['game-play'] = (function() {
 			asteroids.push(asteroid);
 		}
 
+		missiles.push(missile4);
+
 	}
 	
 	//------------------------------------------------------------------
@@ -159,12 +233,14 @@ SPACEGAME.screens['game-play'] = (function() {
 
 		myKeyboard.update(SPACEGAME.elapsedTime);
 		myShip.update(SPACEGAME.elapsedTime);
+		// updating active missiles
+
 		for(var i = 0 ; i < missiles.length ; i++){
 			if (missiles[i].fired() === true){
 				missiles[i].update(SPACEGAME.elapsedTime);
 			}
-			
 		}
+		// updating active asteroids
 		for (var i = 0; i < asteroids.length; ++i) {
 			asteroids[i].update(SPACEGAME.elapsedTime);
 		};
@@ -174,11 +250,13 @@ SPACEGAME.screens['game-play'] = (function() {
 		//--------------------------------------------------------------
 		SPACEGAME.graphics.clear();
 		myShip.draw();
+		// drawing active missiles
 		for(var i = 0 ; i < missiles.length ; i++){
 			if (missiles[i].fired() === true){
 				missiles[i].draw();
 			}
 		}
+
 		for (var i = 0; i < asteroids.length; ++i) {
 			asteroids[i].draw();
 		};
