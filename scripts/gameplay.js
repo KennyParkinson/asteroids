@@ -14,6 +14,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		missile1 = null,
 		missile2 = null,
 		missile3 = null,
+		missile4 = null,
 		cancelNextRequest = false,
 		missiles = [],
 		lastfire = 0
@@ -70,6 +71,17 @@ SPACEGAME.screens['game-play'] = (function() {
 				rotation : 0,			// radians going clock wise
 				moveRate : missilespeed,			// pixels per second
 		});
+
+		missile4 = SPACEGAME.graphics.missile( {
+				image : SPACEGAME.images['images/projectile.png'],
+				center : { x : 0, y : 0},
+				width : 10, height : 10,
+				lifetime : 0,			// time to check against performance.now() for lifetime
+				active : false,			// if object should be displayed 
+				rotation : 0,			// radians going clock wise
+				moveRate : missilespeed,			// pixels per second
+		});
+
 		// Array of live objects on the field
 		missiles = [];
 		
@@ -99,6 +111,11 @@ SPACEGAME.screens['game-play'] = (function() {
 					missile3.fire(myShip.getcenter(), myShip.gettraj(), myShip.getspeed());
 					console.log("launch missile 3");
 				}
+				else if ( missile4.fired() === false){
+					lastfire = performance.now();
+					missile4.fire(myShip.getcenter(), myShip.gettraj(), myShip.getspeed());
+					console.log("launch missile 4");
+				}
 				else{console.log("all missiles fired");}
 			}
 		});
@@ -111,10 +128,11 @@ SPACEGAME.screens['game-play'] = (function() {
 			SPACEGAME.game.showScreen('main-menu');
 		});
 
-		// Adding Ship to the active Objects array
+		// Adding missiles to missles to the active Objects array
 		missiles.push(missile1);
 		missiles.push(missile2);
 		missiles.push(missile3);
+		missiles.push(missile4);
 
 	}
 	

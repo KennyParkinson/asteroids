@@ -163,7 +163,7 @@ SPACEGAME.graphics = (function() {
 			var speed = 1;
 			// getting vector total
 			spec.vector = spec.vector + spec.moveRate;
-			if (spec.vector > speed){
+			if (spec.vector > speed){	
 				spec.vector = speed;
 			}
 			if (spec.vector < -speed){
@@ -240,7 +240,7 @@ SPACEGAME.graphics = (function() {
 			// set trajectory
 			spec.rotation = shiptraj;
 			// set launch speed
-			spec.moveRate = 5 + shipspeed;
+			spec.moveRate = 4 + shipspeed;
 		};
 
 		that.fired = function() {
