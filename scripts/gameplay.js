@@ -16,7 +16,10 @@ SPACEGAME.screens['game-play'] = (function() {
 		missile3 = null,
 		cancelNextRequest = false,
 		missiles = [],
-		lastfire = 0
+		asteroids = [],
+		lastfire = 0,
+		level = 1,
+		canvas = document.getElementById('canvas-main')
 	
 	function initialize() {
 		console.log('game initializing...');
@@ -27,14 +30,15 @@ SPACEGAME.screens['game-play'] = (function() {
 				image : SPACEGAME.images['images/spaceship.png'],
 				center : { x : 250, y : 250 },
 				width : 30, height : 30,
-				active : true, 			// if object should be displayed
+				active : true, 	
+				velocity : {x : 0, y : 0 },		// if object should be displayed
 				vector : 0,             // magnitude of the vector
 				vectorx : 0,			// the x of vector
 				vectory : 0,			// the y of vector
 				lastx : 0,				// drift x
 				lasty : 0, 				// drift y
 				rotation : 0,			// radians going clock wise
-				moveRate : 10,			// pixels per second
+				moveRate : 200,			// pixels per second
 				rotateRate : 3.14159	// Radians per second
 			});
 		//---------------------------------------------------
@@ -114,6 +118,29 @@ SPACEGAME.screens['game-play'] = (function() {
 		missiles.push(missile1);
 		missiles.push(missile2);
 		missiles.push(missile3);
+		var numAsteroids = level * Random.nextGaussian(6,2);
+		if(numAsteroids < 0)
+		{
+			numAsteroids *= -1;
+		}
+		if(numAsteroids < level+5)
+		{
+			numAsteroids = level + 5;
+		}
+		for(var i = 0; i < numAsteroids; ++i)
+		{
+			var thisX = Random.nextRange(0, canvas.width);
+			var thisY = Random.nextRange(0, canvas.height);
+			var asteroid = SPACEGAME.graphics.asteroid( {
+				image : SPACEGAME.images['images/bigasteroid.png'],
+				center : { x : thisX, y : thisY},
+				width : 15, height : 15,
+				rotation : Random.nextDouble(),
+				moveRate : Random.nextRange(1, 10),
+				rotateRate : 3.14159
+			});
+			asteroids.push(asteroid);
+		}
 
 	}
 	
@@ -131,13 +158,16 @@ SPACEGAME.screens['game-play'] = (function() {
 		//--------------------------------------------------------------
 
 		myKeyboard.update(SPACEGAME.elapsedTime);
-		myShip.update();
+		myShip.update(SPACEGAME.elapsedTime);
 		for(var i = 0 ; i < missiles.length ; i++){
 			if (missiles[i].fired() === true){
-				missiles[i].update();
+				missiles[i].update(SPACEGAME.elapsedTime);
 			}
 			
 		}
+		for (var i = 0; i < asteroids.length; ++i) {
+			asteroids[i].update(SPACEGAME.elapsedTime);
+		};
 
 		//--------------------------------------------------------------
 		//			Render Everything
@@ -149,6 +179,9 @@ SPACEGAME.screens['game-play'] = (function() {
 				missiles[i].draw();
 			}
 		}
+		for (var i = 0; i < asteroids.length; ++i) {
+			asteroids[i].draw();
+		};
 
 		if (!cancelNextRequest) {
 			requestAnimationFrame(gameLoop);
