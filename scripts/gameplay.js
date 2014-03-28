@@ -78,7 +78,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_A, myShip.rotateLeft);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_D, myShip.rotateRight);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_W, myShip.accelerate);
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_F, function() {
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_F, function () {
 			// enough time has elapsed since last missile fire
 			if (performance.now() > lastfire + 500){
 				//
@@ -101,7 +101,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				}
 			}
 		});
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function() {
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function () {
 			//
 			// Stop the game loop by canceling the request for the next animation frame
 			cancelNextRequest = true;
