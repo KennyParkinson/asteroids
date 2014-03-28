@@ -77,4 +77,4 @@ Collision Detection:
 		Draw smaller circles inside the larger circles to  compensate for the irregularity of the object.
 
 Kenny will work on:
-	Change controls and Asteroid Splitting
+	Change controls and Asteroid Splitting and rotation and add Lives and Audio
