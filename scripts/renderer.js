@@ -200,6 +200,11 @@ SPACEGAME.graphics = (function() {
 		that.getspeed = function() {
 			return (spec.vector);
 		};
+
+		that.whatami = function() {
+			// ship = 1, missile = 2, asteroid = 3
+			return 1;
+		};
 		
 		that.draw = function() {
 			context.save();
@@ -269,6 +274,11 @@ SPACEGAME.graphics = (function() {
 		that.getcenter = function() {
 			return (spec.center);
 		};
+
+		that.whatami = function() {
+			// ship = 1, missile = 2, asteroid = 3
+			return 2;
+		};
 		
 		that.draw = function() {
 			context.save();
@@ -293,6 +303,9 @@ SPACEGAME.graphics = (function() {
 		var that = {};
 		that.destroyed = function() {
 			spec.active = false;
+		};
+		that.isactive = function() {
+			return spec.active;
 		};
 
 		that.update = function(elapsedTime) {
@@ -320,6 +333,11 @@ SPACEGAME.graphics = (function() {
 
 		that.getcenter = function() {
 			return (spec.center);
+		};
+
+		that.whatami = function() {
+			// ship = 1, missile = 2, asteroid = 3
+			return 3;
 		};
 
 		that.draw = function() {

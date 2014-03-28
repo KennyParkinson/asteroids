@@ -158,7 +158,8 @@ SPACEGAME.screens['game-play'] = (function() {
 				width : 15, height : 15,
 				rotation : Random.nextDouble(),
 				moveRate : Random.nextRange(1, 10),
-				rotateRate : 3.14159
+				rotateRate : 3.14159,
+				active : true
 			});
 			asteroids.push(asteroid);
 		}
@@ -205,27 +206,72 @@ SPACEGAME.screens['game-play'] = (function() {
 		for (var i = 0; i < asteroids.length; ++i) {
 			asteroids[i].update(SPACEGAME.elapsedTime);
 		};
-		
-		// function split asteroids, ships and missiles into their respective quadrants
+
+		//--------------------------------------------------------------------
 		//			Qadrants for our 568 x 354 with a 50 px overlap
 		//      qI (-25, -25)(309, 202)  	qII (259, -25)(593, 202)
 		//		qIII (-25, 152)(309, 379) 	qIV (259, 152)(593, 379)
+		var quad1 = quadrant (asteroids, missiles, myShip, -25, 309, -25, 202);
+		var quad2 = quadrant (asteroids, missiles, myShip, 259, 593, -25, 202);
+		var quad3 = quadrant (asteroids, missiles, myShip, -25, 309, 152, 379);
+		var quad4 = quadrant (asteroids, missiles, myShip, 259, 593, 152, 379);
+		//--------------------------------------------------------------------
+		//	Checking collisions in each quadrant
+
+		//------------------------------------------------------------
+		// function split asteroids, ships and missiles into their respective quadrants
 		//
 		function quadrant(asteroids, missiles, myShip, x1, x2, y1, y2){
 			var quadarray = [];
 			//-----------------------------------------------------------
 			//add all asteroids missiles and ships that exist in (x1, y1) (x2, y2)
 			//-----------------------------------------------------------
-
-
+			// ship check and add if in quadrant
+			var shipcenter = myShip.getcenter();
+			if(shipcenter.x > x1 && shipcenter.x < x2 && shipcenter.y > y1 && shipcenter.y < y2)
+				{quadarray.push(myShip);}
+			// asteroids check if in quadrant and alive
+			for(var count = 0; count< asteroids.length; count++){
+				if(asteroids[count].isactive()){
+					var asteroidcenter = asteroids[count].getcenter();
+					if(asteroidcenter.x > x1 && asteroidcenter.x < x2 && asteroidcenter.y > y1 && asteroidcenter.y < y2){	
+						quadarray.push(asteroids[count]);
+					}
+				}
+			}
+			// missiles check if in quadrant and alive
+			for(var count2 = 0; count2 < missiles.length; count2++){
+				var missilecenter = missiles[count2].getcenter();
+				if(missilecenter.x > x1 && missilecenter.x < x2 && missilecenter.y > y1 && missilecenter.y < y2){
+					if(missiles[count2].fired()){
+						quadarray.push(missiles[count2]);
+					}
+				}
+			}
+			// sending back array of 
 			return quadarray;
 		};
 		// check collisions in respective quadrants using this function
+		
 		function collisions(quadrantArray){
 			//----------------------------------------------
 			// if collisions occur do what needs to happen
 			//----------------------------------------------
+			//			whatami() results are ship = 1, missile =2, asteroid = 3
+			// check missiles against asteroids and ship against asteroids
+			for(var count = quadrantArray.length-1; count > 0; count--){
+				for(var count2 = count-1; count >= 0; count2--){
+					// if is ship
+					if(quadrantArray[count].whatami() === 1 || quadrantArray[count].whatami() === 2){
+						if(quadrantArray[count2].whatami() === 3){
+							//possibile collisions between ship/missile and asteroid check locations
+							//need an is touching function where we compare 2 objects somehow
 
+
+						}
+					}
+				}
+			}
 		};
 
 
