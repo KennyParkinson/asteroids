@@ -231,8 +231,6 @@ SPACEGAME.graphics = (function() {
 			spec.center.y = shipcoords.y;
 			// set trajectory
 			spec.rotation = shiptraj;
-			// set launch speed
-			spec.moveRate = 4 + shipspeed;
 		};
 
 		that.fired = function() {
@@ -241,7 +239,8 @@ SPACEGAME.graphics = (function() {
 			
 		that.update = function(elapsedTime) {
 			// if lifetime is past then disappear
-			if(performance.now() > 800 + spec.lifetime){
+			spec.lifetime += elapsedTime/1000
+			if(spec.lifetime > 4){
 				spec.active = false;
 				spec.lifetime = 0;
 			}

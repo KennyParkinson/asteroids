@@ -51,7 +51,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		//---------------------------------------------------
 		//	All 3 missiles
 		//---------------------------------------------------
-		var missilespeed = 4;
+		var missilespeed = 400;
 		missile1 = SPACEGAME.graphics.missile( {
 				image : SPACEGAME.images['images/projectile.png'],
 				center : { x : 0, y : 0},
@@ -91,53 +91,6 @@ SPACEGAME.screens['game-play'] = (function() {
 				rotation : 0,			// radians going clock wise
 				moveRate : missilespeed,			// pixels per second
 		});
-
-		bigAsteroid1 = SPACEGAME.graphics.asteroid( {
-				image : SPACEGAME.images['images/bigasteroid.png'],
-				center : { x : 0, y : 250 },
-				width : 100, height : 100,
-				active : true, 			// if object should be displayed
-				rotation : Math.PI,			// radians going clock wise
-				moveRate : .1,		// pixels per second
-				rotateRate : 3.14159	// Radians per second
-		});
-		bigAsteroid2 = SPACEGAME.graphics.asteroid( {
-				image : SPACEGAME.images['images/bigasteroid.png'],
-				center : { x : 250, y : 100 },
-				width : 100, height : 100,
-				active : true, 			// if object should be displayed
-				rotation : Math.PI /4,			// radians going clock wise
-				moveRate : .1,		// pixels per second
-				rotateRate : 3.14159	// Radians per second
-		});
-		midAsteroid1 = SPACEGAME.graphics.asteroid( {
-				image : SPACEGAME.images['images/middleasteroid.png'],
-				center : { x : 1, y : 1 },
-				width : 100, height : 100,
-				active : true, 			// if object should be displayed
-				rotation : Math.PI /6,			// radians going clock wise
-				moveRate : .1,		// pixels per second
-				rotateRate : 3.14159	// Radians per second
-		});
-		midAsteroid2 = SPACEGAME.graphics.asteroid( {
-				image : SPACEGAME.images['images/middleasteroid.png'],
-				center : { x : 350, y : 5 },
-				width : 100, height : 100,
-				active : true, 			// if object should be displayed
-				rotation : Math.PI * 3,			// radians going clock wise
-				moveRate : .1,		// pixels per second
-				rotateRate : 3.14159	// Radians per second
-		});
-		midAsteroid3 = SPACEGAME.graphics.asteroid( {
-				image : SPACEGAME.images['images/middleasteroid.png'],
-				center : { x : 0 , y : 350 },
-				width : 100, height : 100,
-				active : true, 			// if object should be displayed
-				rotation : Math.PI * 6,			// radians going clock wise
-				moveRate : .1,		// pixels per second
-				rotateRate : 3.14159	// Radians per second
-		});
-
 
 		// Arrays of objects on the field
 		missiles = [];
@@ -230,7 +183,19 @@ SPACEGAME.screens['game-play'] = (function() {
 		//--------------------------------------------------------------
 		//  	Update Everything
 		//--------------------------------------------------------------
+		update(elapsedTime);
+		
+		render();
+		//--------------------------------------------------------------
+		//			Render Everything
+		//--------------------------------------------------------------
+		
 
+		if (!cancelNextRequest) {
+			requestAnimationFrame(gameLoop);
+		}
+	}
+	function update(elapsedTime) {
 		myKeyboard.update(SPACEGAME.elapsedTime);
 		myShip.update(SPACEGAME.elapsedTime);
 		// updating active missiles
@@ -244,10 +209,9 @@ SPACEGAME.screens['game-play'] = (function() {
 		for (var i = 0; i < asteroids.length; ++i) {
 			asteroids[i].update(SPACEGAME.elapsedTime);
 		};
+	}
 
-		//--------------------------------------------------------------
-		//			Render Everything
-		//--------------------------------------------------------------
+	function render(){
 		SPACEGAME.graphics.clear();
 		myShip.draw();
 		// drawing active missiles
@@ -260,10 +224,6 @@ SPACEGAME.screens['game-play'] = (function() {
 		for (var i = 0; i < asteroids.length; ++i) {
 			asteroids[i].draw();
 		};
-
-		if (!cancelNextRequest) {
-			requestAnimationFrame(gameLoop);
-		}
 	}
 	
 	function run() {
