@@ -75,3 +75,6 @@ Collision Detection:
 		Compare the distance between the two centers of the objects vs the combined radii of each object
 	Subdivision:
 		Draw smaller circles inside the larger circles to  compensate for the irregularity of the object.
+
+Kenny will work on:
+	Change controls and Asteroid Splitting
