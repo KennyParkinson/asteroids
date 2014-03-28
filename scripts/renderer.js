@@ -41,6 +41,7 @@ SPACEGAME.graphics = (function() {
 		
 		context.restore();
 	};
+
 	function particleSystem(spec, graphics) {
 		'use strict';
 		var that = {},
@@ -140,6 +141,7 @@ SPACEGAME.graphics = (function() {
 		};
 		return that;
 	};
+
 	function ship(spec) {
 		var that = {};
 		
@@ -225,6 +227,7 @@ SPACEGAME.graphics = (function() {
 		
 		return that;
 	};
+
 	function missile(spec) {
 		var that = {};
 		that.fire = function(shipcoords, shiptraj, shipspeed) {
@@ -237,7 +240,7 @@ SPACEGAME.graphics = (function() {
 			// set trajectory
 			spec.rotation = shiptraj;
 			// set launch speed
-			spec.moveRate = 10 + shipspeed;
+			spec.moveRate = 5 + shipspeed;
 		};
 
 		that.fired = function() {
@@ -246,7 +249,7 @@ SPACEGAME.graphics = (function() {
 			
 		that.update = function() {
 			// if lifetime is past then disappear
-			if(performance.now() > 400 + spec.lifetime){
+			if(performance.now() > 800 + spec.lifetime){
 				spec.active = false;
 				spec.lifetime = 0;
 			}
@@ -289,6 +292,7 @@ SPACEGAME.graphics = (function() {
 		
 		return that;
 	};
+
 	function asteroid(spec){
 		var that = {};
 
@@ -315,7 +319,8 @@ SPACEGAME.graphics = (function() {
 		particleSystem : particleSystem,
 		clear : clear,
 		ship : ship,
-		missile : missile
+		missile : missile,
+		asteroid : asteroid
 	
 	};
 }());

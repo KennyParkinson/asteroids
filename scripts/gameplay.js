@@ -34,7 +34,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				lastx : 0,				// drift x
 				lasty : 0, 				// drift y
 				rotation : 0,			// radians going clock wise
-				moveRate : 10,			// pixels per second
+				moveRate : .001,			// pixels per second
 				rotateRate : 3.14159	// Radians per second
 			});
 		//---------------------------------------------------
@@ -80,7 +80,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_W, myShip.accelerate);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_F, function () {
 			// enough time has elapsed since last missile fire
-			if (performance.now() > lastfire + 500){
+			if (performance.now() > lastfire + 150){
 				//
 				// Check missiles to see if they can be fired and fire first available missile
 
@@ -99,6 +99,7 @@ SPACEGAME.screens['game-play'] = (function() {
 					missile3.fire(myShip.getcenter(), myShip.gettraj(), myShip.getspeed());
 					console.log("launch missile 3");
 				}
+				else{console.log("all missiles fired");}
 			}
 		});
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function () {
