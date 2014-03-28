@@ -265,6 +265,10 @@ SPACEGAME.graphics = (function() {
 				spec.center.y = canvas.height + 25;
 			}
 		};
+
+		that.getcenter = function() {
+			return (spec.center);
+		};
 		
 		that.draw = function() {
 			context.save();
@@ -291,31 +295,6 @@ SPACEGAME.graphics = (function() {
 			spec.active = false;
 		};
 
-		that.update = function() {
-			// calculating x vector from total vector
-			spec.center.x += spec.moveRate * Math.cos(spec.rotation);
-			
-			// calculating y vector from the total vector
-			spec.center.y += spec.moveRate * Math.sin(spec.rotation);
-			// Wrapping for asteroids
-			if(spec.center.x >= canvas.width + 25)
-			{
-				spec.center.x = 0-25;
-			}
-			else if(spec.center.x <= 0-25)
-			{
-				spec.center.x = canvas.width + 25;
-			}
-			if(spec.center.y >= canvas.height + 25)
-			{
-				spec.center.y = 0-25;
-			}
-			else if(spec.center.y <= 0-25)
-			{
-				spec.center.y = canvas.height + 25;
-			}
-		};
-
 		that.update = function(elapsedTime) {
 			var directionX = Math.cos(spec.rotation);
 			var directionY = Math.sin(spec.rotation);
@@ -337,6 +316,10 @@ SPACEGAME.graphics = (function() {
 			{
 				spec.center.y = canvas.height;
 			}
+		};
+
+		that.getcenter = function() {
+			return (spec.center);
 		};
 
 		that.draw = function() {

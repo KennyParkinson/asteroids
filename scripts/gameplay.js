@@ -210,6 +210,30 @@ SPACEGAME.screens['game-play'] = (function() {
 		for (var i = 0; i < asteroids.length; ++i) {
 			asteroids[i].update(SPACEGAME.elapsedTime);
 		};
+		
+		// function split asteroids, ships and missiles into their respective quadrants
+		//			Qadrants for our 568 x 354 with a 50 px overlap
+		//      qI (-25, -25)(309, 202)  	qII (259, -25)(593, 202)
+		//		qIII (-25, 152)(309, 379) 	qIV (259, 152)(593, 379)
+		//
+		function quadrant(asteroids, missiles, myShip, x1, x2, y1, y2){
+			var quadarray = [];
+			//-----------------------------------------------------------
+			//add all asteroids missiles and ships that exist in (x1, y1) (x2, y2)
+			//-----------------------------------------------------------
+
+
+			return quadarray;
+		};
+		// check collisions in respective quadrants using this function
+		function collisions(quadrantArray){
+			//----------------------------------------------
+			// if collisions occur do what needs to happen
+			//----------------------------------------------
+
+		};
+
+
 	}
 
 	function render(){
