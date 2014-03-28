@@ -160,10 +160,11 @@ SPACEGAME.screens['game-play'] = (function() {
 			var asteroid = SPACEGAME.graphics.asteroid( {
 				image : SPACEGAME.images['images/bigasteroid.png'],
 				center : { x : thisX, y : thisY},
-				width : 15, height : 15,
+				width: 43,
+				height: 43,
 				rotation : Random.nextDouble(),
 				moveRate : Random.nextRange(1, 10),
-				radius : 23,
+				radius : 21.5,
 				rotateRate : 3.14159,
 				active : true
 			});
@@ -200,7 +201,10 @@ SPACEGAME.screens['game-play'] = (function() {
 	}
 	function update(elapsedTime) {
 		myKeyboard.update(SPACEGAME.elapsedTime);
-		myShip.update(SPACEGAME.elapsedTime);
+		if(myShip.isactive())
+		{
+			myShip.update(SPACEGAME.elapsedTime);
+		}
 		// updating active missiles
 
 		for(var i = 0 ; i < missiles.length ; i++){
@@ -210,7 +214,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		}
 		// updating active asteroids
 		for (var i = 0; i < asteroids.length; ++i) {
-			if(!asteroids[i].destroyed())
+			if(asteroids[i].isactive())
 			{
 				asteroids[i].update(SPACEGAME.elapsedTime);
 			}
@@ -228,6 +232,22 @@ SPACEGAME.screens['game-play'] = (function() {
 		var quad2 = quadrant (asteroids, missiles, myShip, 259, 593, -25, 202);
 		var quad3 = quadrant (asteroids, missiles, myShip, -25, 309, 152, 379);
 		var quad4 = quadrant (asteroids, missiles, myShip, 259, 593, 152, 379);
+		var allquads = [];
+		allquads.push(quad1);
+		allquads.push(quad2);
+		allquads.push(quad3);
+		allquads.push(quad4);
+
+		for (var i = allquads.length - 1; i >= 0; i--) {
+			if(allquads[i].missilesinQuad.length > 0 &&allquads[i].AsteroidsinQuad.length > 0)
+			{
+				collisions(allquads[i].missilesinQuad, allquads[i].AsteroidsinQuad);
+			}
+			if(allquads[i].shipsinQuad.length > 0 &&allquads[i].AsteroidsinQuad.length > 0)
+			{
+				collisions(allquads[i].shipsinQuad, allquads[i].AsteroidsinQuad);
+			}
+		};
 		//--------------------------------------------------------------------
 		//	Checking collisions in each quadrant
 
@@ -235,20 +255,25 @@ SPACEGAME.screens['game-play'] = (function() {
 		// function split asteroids, ships and missiles into their respective quadrants
 		//
 		function quadrant(asteroids, missiles, myShip, x1, x2, y1, y2){
-			var quadarray = [];
+			var quad = {
+				missilesinQuad : [],
+				shipsinQuad : [],
+				AsteroidsinQuad : []
+			};
+			
 			//-----------------------------------------------------------
 			//add all asteroids missiles and ships that exist in (x1, y1) (x2, y2)
 			//-----------------------------------------------------------
 			// ship check and add if in quadrant
 			var shipcenter = myShip.getcenter();
 			if(shipcenter.x > x1 && shipcenter.x < x2 && shipcenter.y > y1 && shipcenter.y < y2)
-				{quadarray.push(myShip);}
+				{quad.shipsinQuad.push(myShip);}
 			// asteroids check if in quadrant and alive
 			for(var count = 0; count< asteroids.length; count++){
 				if(asteroids[count].isactive()){
 					var asteroidcenter = asteroids[count].getcenter();
 					if(asteroidcenter.x > x1 && asteroidcenter.x < x2 && asteroidcenter.y > y1 && asteroidcenter.y < y2){	
-						quadarray.push(asteroids[count]);
+						quad.AsteroidsinQuad.push(asteroids[count]);
 					}
 				}
 			}
@@ -257,34 +282,83 @@ SPACEGAME.screens['game-play'] = (function() {
 				var missilecenter = missiles[count2].getcenter();
 				if(missilecenter.x > x1 && missilecenter.x < x2 && missilecenter.y > y1 && missilecenter.y < y2){
 					if(missiles[count2].fired()){
-						quadarray.push(missiles[count2]);
+						quad.missilesinQuad.push(missiles[count2]);
 					}
 				}
 			}
 			// sending back array of 
-			return quadarray;
+			return quad;
 		};
 		// check collisions in respective quadrants using this function
 		
-		function collisions(quadrantArray){
-			//----------------------------------------------
-			// if collisions occur do what needs to happen
-			//----------------------------------------------
-			//			whatami() results are ship = 1, missile =2, asteroid = 3
-			// check missiles against asteroids and ship against asteroids
-			for(var count = quadrantArray.length-1; count > 0; count--){
-				for(var count2 = count-1; count >= 0; count2--){
-					// if is ship
-					if(quadrantArray[count].whatami() === 1 || quadrantArray[count].whatami() === 2){
-						if(quadrantArray[count2].whatami() === 3){
-							//possibile collisions between ship/missile and asteroid check locations
-							//need an is touching function where we compare 2 objects somehow
+		function collisions(array1, array2){
+			var totalRadii = array1[0].getRadius() + array2[0].getRadius();
+			for(var i = 0; i<array1.length; ++i)
+			{
+				for(var j = 0; j<array2.length; ++j)
+				{
+					if(lineDistance(array1[i].getcenter(), array2[j].getcenter()) < totalRadii)
+					{
+						//cause collision
+						array1[i].destroyed();
+						array2[j].destroyed();
+						if(array2[j].whatami()===3)
+						{
+							if(array2[j].getRadius() === 21.5)
+							{
+								for(var k = 0; k < 3; ++k)
+								{
+									var asteroid = SPACEGAME.graphics.asteroid( {
+										image : SPACEGAME.images['images/middleasteroid.png'],
+										center : array2[j].getcenter(),
+										width : 25,
+										height : 25, 
+										rotation : Random.nextDouble(),
+										moveRate : Random.nextRange(1, 10),
+										radius : 12.5,
+										rotateRate : 3.14159,
+										active : true
+									});
+									asteroids.push(asteroid);
+								}
+							}
+							else if(array2[j].getRadius() === 12.5)
+							{
+								for(var k = 0; k < 4; ++k)
+								{
+									var asteroid = SPACEGAME.graphics.asteroid( {
+										image : SPACEGAME.images['images/littleasteroid.png'],
+										center : array2[j].getcenter(),
+										width : 16,
+										height : 16, 
+										rotation : Random.nextDouble(),
+										moveRate : Random.nextRange(1, 10),
+										radius : 8,
+										rotateRate : 3.14159,
+										active : true
+									});
+									asteroids.push(asteroid);
+								}
 
-
+							}
 						}
 					}
 				}
 			}
+		};
+
+		function lineDistance( point1, point2 )
+		{
+		  var xs = 0;
+		  var ys = 0;
+		 
+		  xs = point2.x - point1.x;
+		  xs = xs * xs;
+		 
+		  ys = point2.y - point1.y;
+		  ys = ys * ys;
+		 
+		  return Math.sqrt( xs + ys );
 		};
 
 
@@ -292,7 +366,10 @@ SPACEGAME.screens['game-play'] = (function() {
 
 	function render(){
 		SPACEGAME.graphics.clear();
-		myShip.draw();
+		if(myShip.isactive())
+		{
+			myShip.draw();
+		}
 		// drawing active missiles
 		for(var i = 0 ; i < missiles.length ; i++){
 			if (missiles[i].fired() === true){

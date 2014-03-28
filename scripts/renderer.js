@@ -144,6 +144,14 @@ SPACEGAME.graphics = (function() {
 
 	function ship(spec) {
 		var that = {};
+
+		that.isactive = function() {
+			return spec.active;
+		};
+
+		that.destroyed = function() {
+			spec.active = false;
+		};
 		
 		that.rotateRight = function(elapsedTime) {
 			spec.rotation += spec.rotateRate * (elapsedTime / 1000);
@@ -243,6 +251,10 @@ SPACEGAME.graphics = (function() {
 
 		that.fired = function() {
 			return(spec.active);
+		};
+
+		that.destroyed = function() {
+			spec.active = false;
 		};
 			
 		that.update = function(elapsedTime) {
