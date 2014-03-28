@@ -179,21 +179,21 @@ SPACEGAME.graphics = (function() {
 		that.update = function() {
 			spec.center.x += spec.vectorx;
 			spec.center.y += spec.vectory;
-			if(spec.center.x >= canvas.width)
+			if(spec.center.x >= canvas.width + 25)
 			{
-				spec.center.x = 0;
+				spec.center.x = 0-25;
 			}
-			else if(spec.center.x <= 0)
+			else if(spec.center.x <= 0-25)
 			{
-				spec.center.x = canvas.width;
+				spec.center.x = canvas.width + 25;
 			}
-			if(spec.center.y >= canvas.height)
+			if(spec.center.y >= canvas.height + 25)
 			{
-				spec.center.y = 0;
+				spec.center.y = 0-25;
 			}
-			else if(spec.center.y <= 0)
+			else if(spec.center.y <= 0-25)
 			{
-				spec.center.y = canvas.height;
+				spec.center.y = canvas.height + 25;
 			}
 		};
 		
@@ -256,21 +256,21 @@ SPACEGAME.graphics = (function() {
 			// moving missile to new coordinates
 			spec.center.x += spec.moveRate * Math.cos(spec.rotation);
 			spec.center.y += spec.moveRate * Math.sin(spec.rotation);
-			if(spec.center.x >= canvas.width)
+			if(spec.center.x >= canvas.width + 25)
 			{
-				spec.center.x = 0;
+				spec.center.x = 0-25;
 			}
-			else if(spec.center.x <= 0)
+			else if(spec.center.x <= 0-25)
 			{
-				spec.center.x = canvas.width;
+				spec.center.x = canvas.width + 25;
 			}
-			if(spec.center.y >= canvas.height)
+			if(spec.center.y >= canvas.height + 25)
 			{
-				spec.center.y = 0;
+				spec.center.y = 0-25;
 			}
-			else if(spec.center.y <= 0)
+			else if(spec.center.y <= 0-25)
 			{
-				spec.center.y = canvas.height;
+				spec.center.y = canvas.height + 25;
 			}
 		};
 		
@@ -295,6 +295,34 @@ SPACEGAME.graphics = (function() {
 
 	function asteroid(spec){
 		var that = {};
+		that.destroyed = function() {
+			spec.active = false;
+		};
+
+		that.update = function() {
+			// calculating x vector from total vector
+			spec.center.x += spec.moveRate * Math.cos(spec.rotation);
+			
+			// calculating y vector from the total vector
+			spec.center.y += spec.moveRate * Math.sin(spec.rotation);
+			// Wrapping for asteroids
+			if(spec.center.x >= canvas.width + 25)
+			{
+				spec.center.x = 0-25;
+			}
+			else if(spec.center.x <= 0-25)
+			{
+				spec.center.x = canvas.width + 25;
+			}
+			if(spec.center.y >= canvas.height + 25)
+			{
+				spec.center.y = 0-25;
+			}
+			else if(spec.center.y <= 0-25)
+			{
+				spec.center.y = canvas.height + 25;
+			}
+		};
 
 		that.draw = function() {
 			context.save();
