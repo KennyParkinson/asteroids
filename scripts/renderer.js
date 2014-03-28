@@ -200,6 +200,10 @@ SPACEGAME.graphics = (function() {
 		that.getspeed = function() {
 			return (spec.vector);
 		};
+
+		that.getRadius = function() {
+			return (spec.radius);
+		};
 		
 		that.draw = function() {
 			context.save();
@@ -269,6 +273,10 @@ SPACEGAME.graphics = (function() {
 		that.getcenter = function() {
 			return (spec.center);
 		};
+
+		that.getRadius = function() {
+			return (spec.radius);
+		};
 		
 		that.draw = function() {
 			context.save();
@@ -316,6 +324,10 @@ SPACEGAME.graphics = (function() {
 			{
 				spec.center.y = canvas.height;
 			}
+		};
+
+		that.getRadius = function() {
+			return (spec.radius);
 		};
 
 		that.getcenter = function() {

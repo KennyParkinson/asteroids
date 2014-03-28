@@ -39,6 +39,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				vectory : 0,			// the y of vector
 				lastx : 0,				// drift x
 				lasty : 0, 				// drift y
+				radius : 15,
 				rotation : 0,			// radians going clock wise
 				moveRate : 200,			// pixels per second
 				rotateRate : 3.14159	// Radians per second
@@ -54,6 +55,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				lifetime : 0,			// time to check against performance.now() for lifetime
 				active : false,			// if object should be displayed 
 				rotation : 0,			// radians going clock wise
+				radius : 5,
 				moveRate : missilespeed,			// pixels per second
 		});
 
@@ -64,6 +66,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				lifetime : 0,			// time to check against performance.now() for lifetime
 				active : false,			// if object should be displayed 
 				rotation : 0,			// radians going clock wise
+				radius : 5,
 				moveRate : missilespeed,			// pixels per second
 		});
 		
@@ -74,6 +77,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				lifetime : 0,			// time to check against performance.now() for lifetime
 				active : false,			// if object should be displayed 
 				rotation : 0,			// radians going clock wise
+				radius : 5,
 				moveRate : missilespeed,			// pixels per second
 		});
 
@@ -84,6 +88,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				lifetime : 0,			// time to check against performance.now() for lifetime
 				active : false,			// if object should be displayed 
 				rotation : 0,			// radians going clock wise
+				radius : 5,
 				moveRate : missilespeed,			// pixels per second
 		});
 
@@ -158,6 +163,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				width : 15, height : 15,
 				rotation : Random.nextDouble(),
 				moveRate : Random.nextRange(1, 10),
+				radius : 23,
 				rotateRate : 3.14159
 			});
 			asteroids.push(asteroid);
@@ -203,7 +209,14 @@ SPACEGAME.screens['game-play'] = (function() {
 		}
 		// updating active asteroids
 		for (var i = 0; i < asteroids.length; ++i) {
-			asteroids[i].update(SPACEGAME.elapsedTime);
+			if(!asteroids[i].destroyed())
+			{
+				asteroids[i].update(SPACEGAME.elapsedTime);
+			}
+			else
+			{
+				asteroids.splice(i, 1);
+			}
 		};
 		
 		// function split asteroids, ships and missiles into their respective quadrants
