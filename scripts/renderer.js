@@ -289,6 +289,27 @@ SPACEGAME.graphics = (function() {
 		
 		return that;
 	};
+	function asteroid(spec){
+		var that = {};
+
+		that.draw = function() {
+			context.save();
+			
+			context.translate(spec.center.x, spec.center.y);
+			context.rotate(spec.rotation);
+			context.translate(-spec.center.x, -spec.center.y);
+			
+			context.drawImage(
+				spec.image, 
+				spec.center.x - spec.width/2, 
+				spec.center.y - spec.height/2);//,
+				//spec.width, spec.height);
+			
+			context.restore();
+		};
+
+		return that;
+	};
 	return {
 		drawImage : drawImage,
 		particleSystem : particleSystem,
