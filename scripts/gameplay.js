@@ -335,7 +335,7 @@ SPACEGAME.screens['game-play'] = (function() {
 										center : array2[j].getcenter(),
 										width : 16,
 										height : 16, 
-										rotation : Random.nextRange(0, keyboard*Math.PI),
+										rotation : Random.nextRange(0, k*Math.PI),
 										moveRate : Random.nextRange(1, 10),
 										radius : 8,
 										rotateRate : 3.14159,
