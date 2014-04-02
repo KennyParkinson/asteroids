@@ -30,7 +30,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		//--------------------------------------------------
 		myShip = SPACEGAME.graphics.ship( {
 				image : SPACEGAME.images['images/spaceship.png'],
-				center : { x : 250, y : 250 },
+				center : { x : 284, y : 177 },
 				width : 30, height : 30,
 				active : true, 	
 				velocity : {x : 0, y : 0 },		// if object should be displayed
@@ -157,12 +157,16 @@ SPACEGAME.screens['game-play'] = (function() {
 		{
 			var thisX = Random.nextRange(0, canvas.width);
 			var thisY = Random.nextRange(0, canvas.height);
+			while( thisX < 334 && thisX > 234 && thisY < 227 && thisY > 127){
+				thisX = Random.nextRange(0, canvas.width);
+				thisY = Random.nextRange(0, canvas.height);
+			}
 			var asteroid = SPACEGAME.graphics.asteroid( {
 				image : SPACEGAME.images['images/bigasteroid.png'],
 				center : { x : thisX, y : thisY},
 				width: 43,
 				height: 43,
-				rotation : Random.nextDouble(),
+				rotation : Random.nextRange(0, 2*Math.PI),
 				moveRate : Random.nextRange(1, 10),
 				radius : 21.5,
 				rotateRate : 3.14159,
@@ -313,7 +317,7 @@ SPACEGAME.screens['game-play'] = (function() {
 										center : array2[j].getcenter(),
 										width : 25,
 										height : 25, 
-										rotation : Random.nextDouble(),
+										rotation : Random.nextRange(0, k*Math.PI),
 										moveRate : Random.nextRange(1, 10),
 										radius : 12.5,
 										rotateRate : 3.14159,
@@ -331,7 +335,7 @@ SPACEGAME.screens['game-play'] = (function() {
 										center : array2[j].getcenter(),
 										width : 16,
 										height : 16, 
-										rotation : Random.nextDouble(),
+										rotation : Random.nextRange(0, keyboard*Math.PI),
 										moveRate : Random.nextRange(1, 10),
 										radius : 8,
 										rotateRate : 3.14159,

@@ -78,4 +78,4 @@ Collision Detection:
 
 Kenny will work on:
 	Change controls and Asteroid Splitting and rotation and add Lives and Audio
-	Move ship to center, prevent asteroid spawn on center.
+	Move ship to centerDONE, prevent asteroid spawn on centerDONE
