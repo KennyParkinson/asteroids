@@ -433,7 +433,7 @@ SPACEGAME.screens['game-play'] = (function() {
 	}
 
 	function explode(centerPoint) {
-		var explosion = explosionAnimation({
+		var explosion = angleExplosionAnimation({
 			image : SPACEGAME.images["images/explodsprite.png"],
 			center :  centerPoint
 		},
