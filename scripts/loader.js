@@ -22,6 +22,7 @@ window.addEventListener('load', function() {
 			load : [
 				'preload!scripts/random.js',
 				'preload!scripts/renderer.js',
+				'preload!scripts/particle-system.js',
 				'preload!scripts/input.js',
 				'preload!scripts/game.js',
 				'preload!scripts/mainmenu.js',
@@ -30,6 +31,7 @@ window.addEventListener('load', function() {
 				'preload!scripts/help.js',
 				'preload!scripts/about.js',
 				'preload!images/vortex.png',
+				'preload!images/exhaust.png',
 				'preload!images/spaceship.png',
 				'preload!images/projectile.png',
 				'preload!images/middleasteroid.png',

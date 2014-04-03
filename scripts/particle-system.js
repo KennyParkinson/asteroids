@@ -1,6 +1,6 @@
 /*jslint browser: true, white: true, plusplus: true */
 /*global Random */
-function particleSystem(spec, graphics) {
+function exhaustParticles(spec, graphics) {
 	'use strict';
 	var that = {},
 		nextName = 1,	// unique identifier for the next particle
@@ -50,12 +50,12 @@ function particleSystem(spec, graphics) {
 				particle = particles[value];
 				//
 				// Update how long it has been alive
-				particle.alive += elapsedTime;
+				particle.alive += elapsedTime/1000;
 				
 				//
 				// Update its position
-				particle.center.x += (elapsedTime * particle.speed * particle.direction.x);
-				particle.center.y += (elapsedTime * particle.speed * particle.direction.y);
+				particle.center.x += (elapsedTime/1000 * particle.speed * particle.direction.x);
+				particle.center.y += (elapsedTime/1000 * particle.speed * particle.direction.y);
 				
 				//
 				// Rotate proportional to its speed

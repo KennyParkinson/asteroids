@@ -78,3 +78,6 @@ Collision Detection:
 
 Kenny will work on:
 	Change controls and Asteroid Splitting and rotation and add Lives and Audio
+
+Bryce Will work on:
+	Explosions, particle exhaust, Aliens

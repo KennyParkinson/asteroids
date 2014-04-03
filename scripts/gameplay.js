@@ -11,6 +11,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		myMouse = SPACEGAME.input.Mouse(),
 		myKeyboard = SPACEGAME.input.Keyboard(),
 		myShip = null,
+		exhaust = null,
 		missile1 = null,
 		missile2 = null,
 		missile3 = null,
@@ -18,6 +19,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		cancelNextRequest = false,
 		missiles = [],
 		asteroids = [],
+		explosions = [],
 		lastfire = 0,
 		level = 1,
 		canvas = document.getElementById('canvas-main')
@@ -91,6 +93,15 @@ SPACEGAME.screens['game-play'] = (function() {
 				radius : 5,
 				moveRate : missilespeed,			// pixels per second
 		});
+		
+		exhaust = exhaustParticles( {
+			image : SPACEGAME.images['images/exhaust.png'],
+			center:myShip.getcenter(),
+			speed: {mean: 10, stdev: 2},
+			lifetime: {mean: 4, stdev: 1}
+			},
+			SPACEGAME.graphics
+		);
 
 		// Arrays of objects on the field
 		missiles = [];
@@ -206,7 +217,10 @@ SPACEGAME.screens['game-play'] = (function() {
 			myShip.update(SPACEGAME.elapsedTime);
 		}
 		// updating active missiles
-
+		for(var i = 0; i < 2; ++i)
+		{
+			exhaust.create();
+		}
 		for(var i = 0 ; i < missiles.length ; i++){
 			if (missiles[i].fired() === true){
 				missiles[i].update(SPACEGAME.elapsedTime);
@@ -223,6 +237,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				asteroids.splice(i, 1);
 			}
 		};
+		exhaust.update(elapsedTime);
 
 		//--------------------------------------------------------------------
 		//			Qadrants for our 568 x 354 with a 50 px overlap
@@ -266,7 +281,7 @@ SPACEGAME.screens['game-play'] = (function() {
 			//-----------------------------------------------------------
 			// ship check and add if in quadrant
 			var shipcenter = myShip.getcenter();
-			if(shipcenter.x > x1 && shipcenter.x < x2 && shipcenter.y > y1 && shipcenter.y < y2)
+			if(shipcenter.x > x1 && shipcenter.x < x2 && shipcenter.y > y1 && shipcenter.y < y2 && myShip.isactive())
 				{quad.shipsinQuad.push(myShip);}
 			// asteroids check if in quadrant and alive
 			for(var count = 0; count< asteroids.length; count++){
@@ -302,6 +317,12 @@ SPACEGAME.screens['game-play'] = (function() {
 						//cause collision
 						array1[i].destroyed();
 						array2[j].destroyed();
+						var center1 = array1[i].getcenter();
+						var center2 = array2[j].getcenter();
+						var centerX = (center1.x + center2.x)/2;
+						var centerY = (center1.y + center2.y)/2;
+						
+						explode({x : centerX, y : centerY});
 						if(array2[j].whatami()===3)
 						{
 							if(array2[j].getRadius() === 21.5)
@@ -364,10 +385,15 @@ SPACEGAME.screens['game-play'] = (function() {
 
 	}
 
+	function explode(centerPoint) {
+		var explosion = SPACEGAME.graphics.particleSystem();
+	}
+
 	function render(){
 		SPACEGAME.graphics.clear();
 		if(myShip.isactive())
 		{
+			exhaust.render();
 			myShip.draw();
 		}
 		// drawing active missiles
@@ -380,6 +406,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		for (var i = 0; i < asteroids.length; ++i) {
 			asteroids[i].draw();
 		};
+		
 	}
 	
 	function run() {
