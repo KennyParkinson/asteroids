@@ -248,7 +248,7 @@ function angleExplosionAnimation(spec, graphics) {
 		// {x : -0.86602540378, y : .5},
 		// {x : -1, y : 0},
 		{x : -0.86602540378, y : -.5},
-		{x : 0.70710678118, y : 0.70710678118},
+		{x : -0.70710678118, y : -0.70710678118},
 		{x : -.5, y : -0.86602540378},
 		// {x : 0, y : -1},
 		// {x : .5, y : -0.86602540378},
@@ -262,7 +262,8 @@ function angleExplosionAnimation(spec, graphics) {
 				{
 					var directionX;
 					var directionY;
-					if(Math.floor(Math.random)%2 == 0)
+					var coin = Math.floor(Math.random()*10)%2;
+					if( coin === 0)
 					{
 						directionX = directions[i].x * -1;
 						directionY = directions[i].y * -1;
