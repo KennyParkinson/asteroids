@@ -96,3 +96,119 @@ function exhaustParticles(spec, graphics) {
 	
 	return that;
 }
+
+function explosionAnimation(spec, graphics) {
+	'use strict';
+	var that = {},
+		nextName = 1,	// unique identifier for the next particle
+		particles = {};	// Set of all active particles
+
+	//------------------------------------------------------------------
+	//
+	// This creates one new particle
+	//
+	//------------------------------------------------------------------
+	that.create = function() {
+		var directions = [
+		{x : 1, y : 0},
+		{x : 0.86602540378, y : .5},
+		{x : .5, y : 0.86602540378},
+		{x : 0, y : 1},
+		{x : -.5, y : 0.86602540378},
+		{x : -0.86602540378, y : .5},
+		{x : -1, y : 0},
+		{x : -0.86602540378, y : -.5},
+		{x : -.5, y : -0.86602540378},
+		{x : 0, y : -1},
+		{x : .5, y : -0.86602540378},
+		{x : 0.86602540378, y : -.5}
+		];
+		for(var i = 0; i < 12; ++i)
+		{
+			for (var j = 0; j < 4; ++j) 
+			{
+				for(var k = 0; k < 4; ++k)
+				{
+					var p = {
+							image: spec.image,
+							size: 32,
+							center: {x: spec.center.x, y: spec.center.y},
+							direction: directions[i],
+							speed: 64 - (j * k * i), // pixels per second
+							rotation: 0,
+							lifetime: 3,	// How long the particle should live, in seconds
+							alive: 0,	// How long the particle has been alive, in seconds
+							clipCoordinates : {x : j*32, y : k*32 }
+						};
+					particles[nextName++] = p;
+				}
+
+			}
+		};
+		
+		
+		
+	};
+	
+	//------------------------------------------------------------------
+	//
+	// Update the state of all particles.  This includes remove any that 
+	// have exceeded their lifetime.
+	//
+	//------------------------------------------------------------------
+	that.update = function(elapsedTime) {
+		var removeMe = [],
+			value,
+			particle;
+		
+		for (value in particles) {
+			if (particles.hasOwnProperty(value)) {
+				particle = particles[value];
+				//
+				// Update how long it has been alive
+				particle.alive += elapsedTime/1000;
+				
+				//
+				// Update its position
+				particle.center.x += (elapsedTime/1000 * particle.speed * particle.direction.x);
+				particle.center.y += (elapsedTime/1000 * particle.speed * particle.direction.y);
+				
+				//
+				// Rotate proportional to its speed
+				particle.rotation += particle.speed / 500;
+				
+				//
+				// If the lifetime has expired, identify it for removal
+				if (particle.alive > particle.lifetime) {
+					removeMe.push(value);
+				}
+			}
+		}
+
+		//
+		// Remove all of the expired particles
+		for (particle = 0; particle < removeMe.length; particle++) {
+			delete particles[removeMe[particle]];
+		}
+		removeMe.length = 0;
+	};
+	
+	//------------------------------------------------------------------
+	//
+	// Render all particles
+	//
+	//------------------------------------------------------------------
+	that.render = function() {
+		var value,
+			particle;
+		
+		for (value in particles) {
+			if (particles.hasOwnProperty(value)) {
+				particle = particles[value];
+				graphics.drawExplosion(particle);
+			}
+		}
+	};
+	
+	return that;
+}

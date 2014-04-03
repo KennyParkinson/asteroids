@@ -265,6 +265,10 @@ SPACEGAME.screens['game-play'] = (function() {
 				asteroids.splice(i, 1);
 			}
 		};
+		for(var i = 0; i < explosions.length; ++i)
+		{
+			explosions[i].update(SPACEGAME.elapsedTime);
+		}
 
 		exhaust.update(elapsedTime);
 
@@ -356,9 +360,10 @@ SPACEGAME.screens['game-play'] = (function() {
 						var center2 = array2[j].getcenter();
 						var centerX = (center1.x + center2.x)/2;
 						var centerY = (center1.y + center2.y)/2;
-						
-						explode({x : centerX, y : centerY});
-
+						if(array1[i].whatami() === 1 && array2[j].whatami() === 3)
+						{
+							explode({x : centerX, y : centerY});
+						}
 								
 								// playing explosion sounds
 							var explosion = new Audio('assets/explosion.wav');
@@ -428,7 +433,13 @@ SPACEGAME.screens['game-play'] = (function() {
 	}
 
 	function explode(centerPoint) {
-		var explosion = SPACEGAME.graphics.particleSystem();
+		var explosion = explosionAnimation({
+			image : SPACEGAME.images["images/explodsprite.png"],
+			center :  centerPoint
+		},
+		SPACEGAME.graphics);
+		explosion.create();
+		explosions.push(explosion);
 	}
 
 	function render(){
@@ -448,6 +459,10 @@ SPACEGAME.screens['game-play'] = (function() {
 		for (var i = 0; i < asteroids.length; ++i) {
 			asteroids[i].draw();
 		};
+		for(var i = 0; i < explosions.length; ++i)
+		{
+			explosions[i].render();
+		}
 		
 	}
 	
