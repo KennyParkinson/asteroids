@@ -22,8 +22,15 @@ SPACEGAME.screens['game-play'] = (function() {
 		explosions = [],
 		lastfire = 0,
 		level = 1,
-		canvas = document.getElementById('canvas-main')
-		lastfire = 0
+		canvas = document.getElementById('canvas-main'),
+		lastfire = 0,
+		sfxvolume = .5,
+		missilefire1 = new Audio('assets/missilefire.wav'),
+		missilefire2 = new Audio('assets/missilefire.wav'),
+		missilefire3 = new Audio('assets/missilefire.wav'),
+		missilefire4 = new Audio('assets/missilefire.wav'),
+		background = new Audio('assets/background.mp3')
+
 	
 	function initialize() {
 		console.log('game initializing...');
@@ -32,7 +39,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		//--------------------------------------------------
 		myShip = SPACEGAME.graphics.ship( {
 				image : SPACEGAME.images['images/spaceship.png'],
-				center : { x : 250, y : 250 },
+				center : { x : 284, y : 177 },
 				width : 30, height : 30,
 				active : true, 	
 				velocity : {x : 0, y : 0 },		// if object should be displayed
@@ -117,25 +124,35 @@ SPACEGAME.screens['game-play'] = (function() {
 			if (performance.now() > lastfire + 150){
 				//
 				// Check missiles to see if they can be fired and fire first available missile
+				// missile sound volume
+				var missilesound = sfxvolume;
 
 				if (missile1.fired() === false){
 					lastfire = performance.now();
 					missile1.fire(myShip.getcenter(), myShip.gettraj(), myShip.getspeed());
+					missilefire1.volume = missilesound; 
+					missilefire1.play();
 					console.log("launch missile 1");
 				}
 				else if (missile2.fired() === false){
 					lastfire = performance.now();
 					missile2.fire(myShip.getcenter(), myShip.gettraj(), myShip.getspeed());
+					missilefire2.volume = missilesound;
+					missilefire2.play();
 					console.log("launch missile 2");
 				}
 				else if ( missile3.fired() === false){
 					lastfire = performance.now();
 					missile3.fire(myShip.getcenter(), myShip.gettraj(), myShip.getspeed());
+					missilefire3.volume = missilesound;
+					missilefire3.play();
 					console.log("launch missile 3");
 				}
 				else if ( missile4.fired() === false){
 					lastfire = performance.now();
 					missile4.fire(myShip.getcenter(), myShip.gettraj(), myShip.getspeed());
+					missilefire4.volume = missilesound;
+					missilefire4.play();
 					console.log("launch missile 4");
 				}
 				else{console.log("all missiles fired");}
@@ -145,6 +162,9 @@ SPACEGAME.screens['game-play'] = (function() {
 			//
 			// Stop the game loop by canceling the request for the next animation frame
 			cancelNextRequest = true;
+			//
+			// Stop the music
+			background.pause();
 			//
 			// Then, return to the main menu
 			SPACEGAME.game.showScreen('main-menu');
@@ -168,12 +188,17 @@ SPACEGAME.screens['game-play'] = (function() {
 		{
 			var thisX = Random.nextRange(0, canvas.width);
 			var thisY = Random.nextRange(0, canvas.height);
+			while( thisX < 334 && thisX > 234 && thisY < 227 && thisY > 127){
+				thisX = Random.nextRange(0, canvas.width);
+				thisY = Random.nextRange(0, canvas.height);
+			}
 			var asteroid = SPACEGAME.graphics.asteroid( {
 				image : SPACEGAME.images['images/bigasteroid.png'],
+				volume : sfxvolume, 
 				center : { x : thisX, y : thisY},
 				width: 43,
 				height: 43,
-				rotation : Random.nextDouble(),
+				rotation : Random.nextRange(0, 2*Math.PI),
 				moveRate : Random.nextRange(1, 10),
 				radius : 21.5,
 				rotateRate : 3.14159,
@@ -192,22 +217,25 @@ SPACEGAME.screens['game-play'] = (function() {
 	//
 	//------------------------------------------------------------------
 	function gameLoop(time) {
+		// initializing audio
+		background.loop = true; // music set to loop
+		background.volume = .1; // half volume
+		background.play();
+
 		SPACEGAME.elapsedTime = time - SPACEGAME.lastTimeStamp;
 		SPACEGAME.lastTimeStamp = time;
-		
 		//--------------------------------------------------------------
 		//  	Update Everything
 		//--------------------------------------------------------------
 		update(SPACEGAME.elapsedTime);
-		
-		render();
 		//--------------------------------------------------------------
 		//			Render Everything
 		//--------------------------------------------------------------
-		
+		render();
 
 		if (!cancelNextRequest) {
 			requestAnimationFrame(gameLoop);
+			
 		}
 	}
 	function update(elapsedTime) {
@@ -225,7 +253,7 @@ SPACEGAME.screens['game-play'] = (function() {
 			if (missiles[i].fired() === true){
 				missiles[i].update(SPACEGAME.elapsedTime);
 			}
-		}
+		};
 		// updating active asteroids
 		for (var i = 0; i < asteroids.length; ++i) {
 			if(asteroids[i].isactive())
@@ -237,7 +265,16 @@ SPACEGAME.screens['game-play'] = (function() {
 				asteroids.splice(i, 1);
 			}
 		};
+
 		exhaust.update(elapsedTime);
+
+		//-------------------------------------------------------------
+		// checking for level completion (no asteroids and aliens gone)
+		if(asteroids.length === 0){
+			level ++;
+			//populateAsteroidsandAliens(level);
+		}
+
 
 		//--------------------------------------------------------------------
 		//			Qadrants for our 568 x 354 with a 50 px overlap
@@ -263,10 +300,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				collisions(allquads[i].shipsinQuad, allquads[i].AsteroidsinQuad);
 			}
 		};
-		//--------------------------------------------------------------------
-		//	Checking collisions in each quadrant
-
-		//------------------------------------------------------------
+		
 		// function split asteroids, ships and missiles into their respective quadrants
 		//
 		function quadrant(asteroids, missiles, myShip, x1, x2, y1, y2){
@@ -317,12 +351,23 @@ SPACEGAME.screens['game-play'] = (function() {
 						//cause collision
 						array1[i].destroyed();
 						array2[j].destroyed();
+
 						var center1 = array1[i].getcenter();
 						var center2 = array2[j].getcenter();
 						var centerX = (center1.x + center2.x)/2;
 						var centerY = (center1.y + center2.y)/2;
 						
 						explode({x : centerX, y : centerY});
+
+								
+								// playing explosion sounds
+							var explosion = new Audio('assets/explosion.wav');
+							explosion.volume = sfxvolume;
+							explosion.play();
+						
+								// end sounds
+
+
 						if(array2[j].whatami()===3)
 						{
 							if(array2[j].getRadius() === 21.5)
@@ -334,7 +379,7 @@ SPACEGAME.screens['game-play'] = (function() {
 										center : array2[j].getcenter(),
 										width : 25,
 										height : 25, 
-										rotation : Random.nextDouble(),
+										rotation : Random.nextRange(0, 10),
 										moveRate : Random.nextRange(1, 10),
 										radius : 12.5,
 										rotateRate : 3.14159,
@@ -352,7 +397,7 @@ SPACEGAME.screens['game-play'] = (function() {
 										center : array2[j].getcenter(),
 										width : 16,
 										height : 16, 
-										rotation : Random.nextDouble(),
+										rotation : Random.nextRange(0, 10),
 										moveRate : Random.nextRange(1, 10),
 										radius : 8,
 										rotateRate : 3.14159,
@@ -368,8 +413,7 @@ SPACEGAME.screens['game-play'] = (function() {
 			}
 		};
 
-		function lineDistance( point1, point2 )
-		{
+		function lineDistance( point1, point2 ){
 		  var xs = 0;
 		  var ys = 0;
 		 
@@ -381,8 +425,6 @@ SPACEGAME.screens['game-play'] = (function() {
 		 
 		  return Math.sqrt( xs + ys );
 		};
-
-
 	}
 
 	function explode(centerPoint) {

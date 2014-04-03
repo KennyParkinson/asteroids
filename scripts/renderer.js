@@ -422,7 +422,7 @@ function exhaust(spec, graphics) {
 	function asteroid(spec){
 		var that = {};
 		that.destroyed = function() {
-			spec.active = false;
+			spec.active = false;  // deactivate asteroid
 		};
 		that.isactive = function() {
 			return spec.active;
@@ -431,8 +431,8 @@ function exhaust(spec, graphics) {
 		that.update = function(elapsedTime) {
 			var directionX = Math.cos(spec.rotation);
 			var directionY = Math.sin(spec.rotation);
-			spec.center.x += spec.moveRate * directionX * elapsedTime /1000;
-			spec.center.y += spec.moveRate * directionY * elapsedTime / 1000;
+			spec.center.x += spec.moveRate * directionX * elapsedTime/1000;
+			spec.center.y += spec.moveRate * directionY * elapsedTime/1000;
 			if(spec.center.x >= canvas.width)
 			{
 				spec.center.x = 0;
