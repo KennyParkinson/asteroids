@@ -47,7 +47,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				center : { x : 284, y : 177 },
 				width : 30, height : 30,
 				active : true, 	
-				velocity : {x : 0, y : 0 },		// if object should be displayed
+				velocity : {x : 0, y : 0 }, // velocity of object with an x and y
 				vector : 0,             // magnitude of the vector
 				vectorx : 0,			// the x of vector
 				vectory : 0,			// the y of vector
@@ -203,7 +203,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				center : { x : thisX, y : thisY},
 				width: 43,
 				height: 43,
-				direction: Random.nextCircleVector(),
+				velocity : {x : 0, y : 0 }, // velocity of object with an x and y
 				rotation : Random.nextRange(0, 2*Math.PI),
 				moveRate : Random.nextRange(20, 50),
 				radius : 21.5,
@@ -447,9 +447,9 @@ SPACEGAME.screens['game-play'] = (function() {
 										center : array2[j].getcenter(),
 										width : 25,
 										height : 25, 
-										direction: Random.nextCircleVector(),
-										rotation : Random.nextRange(0, 10),
-										moveRate : Random.nextRange(25, 50),
+										velocity : {x : 0, y : 0 }, // velocity of object with an x and y
+										rotation : Random.nextRange(0, 2*Math.PI),
+										moveRate : Random.nextRange(25, 35),
 										radius : 12.5,
 										rotateRate : 3.14159,
 										active : true
@@ -466,9 +466,9 @@ SPACEGAME.screens['game-play'] = (function() {
 										center : array2[j].getcenter(),
 										width : 16,
 										height : 16, 
-										direction: Random.nextCircleVector(),
-										rotation : Random.nextRange(0, 10),
-										moveRate : Random.nextRange(30, 60),
+										velocity : {x : 0, y : 0 }, // velocity of object with an x and y
+										rotation : Random.nextRange(0, 2*Math.PI),
+										moveRate : Random.nextRange(30, 40),
 										radius : 8,
 										rotateRate : 3.14159,
 										active : true
