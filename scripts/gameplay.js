@@ -231,11 +231,13 @@ SPACEGAME.screens['game-play'] = (function() {
 			var enemy = SPACEGAME.graphics.enemyCruiser({
 				image : SPACEGAME.images['images/enemy.png'],
 				center : {x : startingX, y : startingY},
+				velocity : {x : 0, y : 0 },	
 				width : 75,
 				height : 36,
 				direction: Random.nextCircleVector(),
 				moveRate : Random.nextRange(50, 100),
-				behavior : "fly"
+				behavior : "fly",
+				rotation : Random.nextDouble()
 			});
 			enemies.push(enemy);
 		}
@@ -246,12 +248,14 @@ SPACEGAME.screens['game-play'] = (function() {
 			
 			var enemy = SPACEGAME.graphics.enemyCruiser({
 				image : SPACEGAME.images['images/capitalShip.png'],
+				velocity : {x : 0, y : 0 },	
 				center : {x : startingX, y : startingY},
 				width : 75,
 				height : 36,
 				direction: Random.nextCircleVector(),
 				moveRate : Random.nextRange(50, 100),
-				behavior : "fly"
+				behavior : "fly",
+				rotation : Random.nextDouble()
 			});
 			enemies.push(enemy);
 		}
@@ -326,14 +330,15 @@ SPACEGAME.screens['game-play'] = (function() {
 
 		exhaust.update(elapsedTime);
 		enemyActivityCountdown -= elapsedTime/1000;
-		if(enemyActivityCountdown <= 0)
+		if(enemyActivityCountdown <= 0 && enemies.length > 0)
 		{
 			enemyActivityCountdown = 3;
 			activeEnemies.push(enemies.shift());
 		}
 		for(var i = 0; i < activeEnemies.length; ++i)
 		{
-
+			activeEnemies[i].accelerate(SPACEGAME.elapsedTime);
+			activeEnemies[i].update(SPACEGAME.elapsedTime);
 		}
 		//-------------------------------------------------------------
 		// checking for level completion (no asteroids and aliens gone)
@@ -524,6 +529,10 @@ SPACEGAME.screens['game-play'] = (function() {
 		for (var i = 0; i < asteroids.length; ++i) {
 			asteroids[i].draw();
 		};
+		for(var i = 0; i < activeEnemies.length; ++i)
+		{
+			activeEnemies[i].draw();
+		}
 		for(var i = 0; i < explosions.length; ++i)
 		{
 			explosions[i].render();
