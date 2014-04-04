@@ -188,7 +188,7 @@ function explosionAnimation(spec, graphics) {
 				
 				//
 				// Rotate proportional to its speed
-				particle.rotation += particle.speed / 500;
+				//particle.rotation += particle.speed / 500;
 				
 				//
 				// If the lifetime has expired, identify it for removal
@@ -293,7 +293,7 @@ function angleExplosionAnimation(spec, graphics) {
 							direction: {x : directionX, y : directionY},
 							speed: 64 - mod, // pixels per second
 							rotation: 0,
-							lifetime: 3,	// How long the particle should live, in seconds
+							lifetime: 3+(16-k*j),	// How long the particle should live, in seconds
 							alive: 0,	// How long the particle has been alive, in seconds
 							clipCoordinates : {x : j*32, y : k*32 }
 						};
@@ -332,7 +332,7 @@ function angleExplosionAnimation(spec, graphics) {
 				
 				//
 				// Rotate proportional to its speed
-				particle.rotation += particle.speed / 500;
+				//particle.rotation += particle.speed / 500;
 				
 				//
 				// If the lifetime has expired, identify it for removal

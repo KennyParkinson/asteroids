@@ -31,6 +31,8 @@ SPACEGAME.screens['game-play'] = (function() {
 		missilefire4 = new Audio('assets/missilefire.wav'),
 		background = new Audio('assets/background.mp3')
 
+		SPACEGAME.accelerating = false;
+
 	
 	function initialize() {
 		console.log('game initializing...');
@@ -119,7 +121,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_A, myShip.rotateLeft);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_D, myShip.rotateRight);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_W, myShip.accelerate);
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_F, function () {
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_ENTER, function () {
 			// enough time has elapsed since last missile fire
 			if (performance.now() > lastfire + 150){
 				//
@@ -198,8 +200,9 @@ SPACEGAME.screens['game-play'] = (function() {
 				center : { x : thisX, y : thisY},
 				width: 43,
 				height: 43,
+				direction: Random.nextCircleVector(),
 				rotation : Random.nextRange(0, 2*Math.PI),
-				moveRate : Random.nextRange(1, 10),
+				moveRate : Random.nextRange(20, 50),
 				radius : 21.5,
 				rotateRate : 3.14159,
 				active : true
@@ -384,8 +387,9 @@ SPACEGAME.screens['game-play'] = (function() {
 										center : array2[j].getcenter(),
 										width : 25,
 										height : 25, 
+										direction: Random.nextCircleVector(),
 										rotation : Random.nextRange(0, 10),
-										moveRate : Random.nextRange(1, 10),
+										moveRate : Random.nextRange(25, 60),
 										radius : 12.5,
 										rotateRate : 3.14159,
 										active : true
@@ -402,8 +406,9 @@ SPACEGAME.screens['game-play'] = (function() {
 										center : array2[j].getcenter(),
 										width : 16,
 										height : 16, 
+										direction: Random.nextCircleVector(),
 										rotation : Random.nextRange(0, 10),
-										moveRate : Random.nextRange(1, 10),
+										moveRate : Random.nextRange(30, 70),
 										radius : 8,
 										rotateRate : 3.14159,
 										active : true
