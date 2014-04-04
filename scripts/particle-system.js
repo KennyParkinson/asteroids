@@ -266,7 +266,7 @@ function angleExplosionAnimation(spec, graphics) {
 					if( coin === 0)
 					{
 						directionX = directions[i].x * -1;
-						directionY = directions[i].y * -1;
+						directionY = directions[i].y;
 					}
 					else
 					{

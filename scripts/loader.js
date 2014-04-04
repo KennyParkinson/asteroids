@@ -38,7 +38,10 @@ window.addEventListener('load', function() {
 				'preload!images/littleasteroid.png',
 				'preload!images/explodsprite.png',
 				'preload!images/bigasteroid.png',
-				'preload!images/background.jpg'
+				'preload!images/background.jpg',
+				'preload!images/enemy.png',
+				'preload!images/capitalShip.png',
+				'preload!images/enemyprojectile.png'
 			],
 			complete : function() {
 				console.log('All files requested for loading...');

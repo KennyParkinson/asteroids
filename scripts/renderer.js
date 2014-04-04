@@ -82,6 +82,7 @@ SPACEGAME.graphics = (function() {
 		};
 		
 		that.accelerate = function(elapsedTime) {
+			SPACEGAME.accelerating = true;
 			var directionX = Math.cos(spec.rotation);
 			var directionY = Math.sin(spec.rotation);
 
@@ -308,14 +309,204 @@ SPACEGAME.graphics = (function() {
 		return that;
 	};
 
+	function enemyCruiser(spec) {
+		var that = {};
+
+		that.isactive = function() {
+			return spec.active;
+		};
+
+		that.destroyed = function() {
+			spec.active = false;
+		};
+		
+		that.rotateRight = function(elapsedTime) {
+			spec.rotation += spec.rotateRate * (elapsedTime / 1000);
+			// if the rotation is greater than 2PI radians +2PI radians
+			if(spec.rotation >= 2*Math.PI)
+				{spec.rotation = spec.rotation - 2*Math.PI;}
+		};
+		
+		that.rotateLeft = function(elapsedTime) {
+			spec.rotation -= spec.rotateRate * (elapsedTime / 1000);
+			// if the rotation is less than 2PI radians +2PI radians
+			if(spec.rotation <= 2*Math.PI)
+				{spec.rotation = spec.rotation + 2*Math.PI;}
+		};
+		
+		that.accelerate = function(elapsedTime) {
+			var directionX = Math.cos(spec.rotation);
+			var directionY = Math.sin(spec.rotation);
+
+			spec.velocity.x += directionX * (spec.moveRate * (elapsedTime / 1000));
+			spec.velocity.y += directionY * (spec.moveRate * (elapsedTime / 1000));
+		};
+
+		that.update = function(elapsedTime) {
+			spec.center.x += spec.velocity.x * elapsedTime /1000;
+			spec.center.y += spec.velocity.y * elapsedTime / 1000;
+
+			if(spec.center.x >= canvas.width + 25)
+			{
+				spec.center.x = 0-25;
+			}
+			else if(spec.center.x <= 0-25)
+			{
+				spec.center.x = canvas.width + 25;
+			}
+			if(spec.center.y >= canvas.height + 25)
+			{
+				spec.center.y = 0-25;
+			}
+			else if(spec.center.y <= 0-25)
+			{
+				spec.center.y = canvas.height + 25;
+			}
+		};
+		
+		that.getcenter = function() {
+			return (spec.center);
+		};
+
+		that.gettraj = function() {
+			return (spec.rotation);
+		};
+
+		that.getspeed = function() {
+			return (spec.vector);
+		};
+
+		that.getRadius = function() {
+			return (spec.radius);
+		};
+
+		that.whatami = function() {
+			// ship = 1, missile = 2, asteroid = 3
+			return 1;
+		};
+		
+		that.draw = function() {
+			context.save();
+			
+			context.translate(spec.center.x, spec.center.y);
+			context.rotate(spec.rotation);
+			context.translate(-spec.center.x, -spec.center.y);
+			
+			context.drawImage(
+				spec.image, 
+				spec.center.x - spec.width/2, 
+				spec.center.y - spec.height/2);//,
+				//spec.width, spec.height);
+			
+			context.restore();
+		};
+		
+		return that;
+	};
+
+	function enemyCapital(spec) {
+		var that = {};
+
+		that.isactive = function() {
+			return spec.active;
+		};
+
+		that.destroyed = function() {
+			spec.active = false;
+		};
+		
+		that.rotateRight = function(elapsedTime) {
+			spec.rotation += spec.rotateRate * (elapsedTime / 1000);
+			// if the rotation is greater than 2PI radians +2PI radians
+			if(spec.rotation >= 2*Math.PI)
+				{spec.rotation = spec.rotation - 2*Math.PI;}
+		};
+		
+		that.rotateLeft = function(elapsedTime) {
+			spec.rotation -= spec.rotateRate * (elapsedTime / 1000);
+			// if the rotation is less than 2PI radians +2PI radians
+			if(spec.rotation <= 2*Math.PI)
+				{spec.rotation = spec.rotation + 2*Math.PI;}
+		};
+		
+		that.accelerate = function(elapsedTime) {
+			var directionX = Math.cos(spec.rotation);
+			var directionY = Math.sin(spec.rotation);
+
+			spec.velocity.x += directionX * (spec.moveRate * (elapsedTime / 1000));
+			spec.velocity.y += directionY * (spec.moveRate * (elapsedTime / 1000));
+		};
+
+		that.update = function(elapsedTime) {
+			spec.center.x += spec.velocity.x * elapsedTime /1000;
+			spec.center.y += spec.velocity.y * elapsedTime / 1000;
+
+			if(spec.center.x >= canvas.width + 25)
+			{
+				spec.center.x = 0-25;
+			}
+			else if(spec.center.x <= 0-25)
+			{
+				spec.center.x = canvas.width + 25;
+			}
+			if(spec.center.y >= canvas.height + 25)
+			{
+				spec.center.y = 0-25;
+			}
+			else if(spec.center.y <= 0-25)
+			{
+				spec.center.y = canvas.height + 25;
+			}
+		};
+		
+		that.getcenter = function() {
+			return (spec.center);
+		};
+
+		that.gettraj = function() {
+			return (spec.rotation);
+		};
+
+		that.getspeed = function() {
+			return (spec.vector);
+		};
+
+		that.getRadius = function() {
+			return (spec.radius);
+		};
+
+		that.whatami = function() {
+			// ship = 1, missile = 2, asteroid = 3
+			return 1;
+		};
+		
+		that.draw = function() {
+			context.save();
+			
+			context.translate(spec.center.x, spec.center.y);
+			context.rotate(spec.rotation);
+			context.translate(-spec.center.x, -spec.center.y);
+			
+			context.drawImage(
+				spec.image, 
+				spec.center.x - spec.width/2, 
+				spec.center.y - spec.height/2);//,
+				//spec.width, spec.height);
+			
+			context.restore();
+		};
+		
+		return that;
+	};
+
 	return {
 		drawImage : drawImage,
 		drawExplosion : drawExplosion,
-		//particleSystem : particleSystem,
 		clear : clear,
 		ship : ship,
 		missile : missile,
-		asteroid: asteroid//,
-		// exhaust :  exhaust
+		asteroid : asteroid,
+		enemyCruiser : enemyCruiser,
+		enemyCapital : enemyCapital
 	};
 }());

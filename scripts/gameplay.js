@@ -18,6 +18,8 @@ SPACEGAME.screens['game-play'] = (function() {
 		missile4 = null,
 		cancelNextRequest = false,
 		missiles = [],
+		enemies = [],
+		activeEnemies = [],
 		asteroids = [],
 		explosions = [],
 		lastfire = 0,
@@ -121,7 +123,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_A, myShip.rotateLeft);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_D, myShip.rotateRight);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_W, myShip.accelerate);
-		myKeyboard.registerCommand(KeyEvent.DOM_VK_ENTER, function () {
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_F, function () {
 			// enough time has elapsed since last missile fire
 			if (performance.now() > lastfire + 150){
 				//
@@ -209,6 +211,50 @@ SPACEGAME.screens['game-play'] = (function() {
 			});
 			asteroids.push(asteroid);
 		}
+		for(var i = 0; i < level*2; ++i)
+		{
+			var startingX;
+			var startingY;
+			var coin = Math.floor(Math.random()*10)%2;
+			if(coin === 0)
+			{
+				startingX = Random.nextRange(-10, 0);
+				startingY = Random.nextRange(0, canvas.width);
+			}
+			else
+			{
+				startingX = Random.nextRange(0, canvas.height);
+				startingY = Random.nextRange(-10, 0);
+			}
+			
+			var enemy = SPACEGAME.graphics.enemyCruiser({
+				image : SPACEGAME.images['images/enemy.png'],
+				center : {x : startingX, y : startingY},
+				width : 75,
+				height : 36,
+				direction: Random.nextCircleVector(),
+				moveRate : Random.nextRange(50, 100),
+				behavior : "fly"
+			});
+			enemies.push(enemy);
+		}
+		for(var i = 0; i < level; ++i)
+		{
+			var startingX = Random.nextRange(0, canvas.height);
+			var startingY  = Random.nextRange(-10, 0);
+			
+			var enemy = SPACEGAME.graphics.enemyCruiser({
+				image : SPACEGAME.images['images/capitalShip.png'],
+				center : {x : startingX, y : startingY},
+				width : 75,
+				height : 36,
+				direction: Random.nextCircleVector(),
+				moveRate : Random.nextRange(50, 100),
+				behavior : "fly"
+			});
+			enemies.push(enemy);
+		}
+		enemyActivityCountdown = 5;
 
 		
 
@@ -248,9 +294,13 @@ SPACEGAME.screens['game-play'] = (function() {
 			myShip.update(SPACEGAME.elapsedTime);
 		}
 		// updating active missiles
-		for(var i = 0; i < 2; ++i)
+		if(SPACEGAME.accelerating)
 		{
-			exhaust.create();
+			for(var i = 0; i < 2; ++i)
+			{
+				exhaust.create();
+			}
+			SPACEGAME.accelerating = false;
 		}
 		for(var i = 0 ; i < missiles.length ; i++){
 			if (missiles[i].fired() === true){
@@ -274,7 +324,16 @@ SPACEGAME.screens['game-play'] = (function() {
 		}
 
 		exhaust.update(elapsedTime);
-
+		enemyActivityCountdown -= elapsedTime/1000;
+		if(enemyActivityCountdown <= 0)
+		{
+			enemyActivityCountdown = 3;
+			activeEnemies.push(enemies.shift());
+		}
+		for(var i = 0; i < activeEnemies.length; ++i)
+		{
+			
+		}
 		//-------------------------------------------------------------
 		// checking for level completion (no asteroids and aliens gone)
 		if(asteroids.length === 0){
@@ -389,7 +448,7 @@ SPACEGAME.screens['game-play'] = (function() {
 										height : 25, 
 										direction: Random.nextCircleVector(),
 										rotation : Random.nextRange(0, 10),
-										moveRate : Random.nextRange(25, 60),
+										moveRate : Random.nextRange(25, 50),
 										radius : 12.5,
 										rotateRate : 3.14159,
 										active : true
@@ -408,7 +467,7 @@ SPACEGAME.screens['game-play'] = (function() {
 										height : 16, 
 										direction: Random.nextCircleVector(),
 										rotation : Random.nextRange(0, 10),
-										moveRate : Random.nextRange(30, 70),
+										moveRate : Random.nextRange(30, 60),
 										radius : 8,
 										rotateRate : 3.14159,
 										active : true
