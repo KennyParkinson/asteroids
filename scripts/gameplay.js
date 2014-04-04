@@ -17,6 +17,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		missile3 = null,
 		missile4 = null,
 		cancelNextRequest = false,
+		enemyActivityCountdown = 0,
 		missiles = [],
 		enemies = [],
 		activeEnemies = [],
@@ -332,7 +333,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		}
 		for(var i = 0; i < activeEnemies.length; ++i)
 		{
-			
+
 		}
 		//-------------------------------------------------------------
 		// checking for level completion (no asteroids and aliens gone)
