@@ -249,7 +249,6 @@ SPACEGAME.graphics = (function() {
 
 			spec.direction.x = directionX * (spec.moveRate * (elapsedTime / 1000));
 			spec.direction.y = directionY * (spec.moveRate * (elapsedTime / 1000));
-			
 			spec.center.x += spec.moveRate * spec.direction.x * elapsedTime/1000;
 			spec.center.y += spec.moveRate * spec.direction.y * elapsedTime/1000;
 			if(spec.center.x >= canvas.width)
@@ -268,6 +267,7 @@ SPACEGAME.graphics = (function() {
 			{
 				spec.center.y = canvas.height;
 			}
+			spec.rotation += spec.moveRate / 10000;
 		};
 
 		that.getRadius = function() {
@@ -343,8 +343,8 @@ SPACEGAME.graphics = (function() {
 		};
 
 		that.update = function(elapsedTime) {
-			spec.center.x += spec.velocity.x * elapsedTime /1000;
-			spec.center.y += spec.velocity.y * elapsedTime / 1000;
+			spec.center.x = spec.velocity.x * elapsedTime /1000;
+			spec.center.y = spec.velocity.y * elapsedTime / 1000;
 
 			if(spec.center.x >= canvas.width + 25)
 			{
@@ -433,8 +433,8 @@ SPACEGAME.graphics = (function() {
 			var directionX = Math.cos(spec.rotation);
 			var directionY = Math.sin(spec.rotation);
 
-			spec.velocity.x += directionX * (spec.moveRate * (elapsedTime / 1000));
-			spec.velocity.y += directionY * (spec.moveRate * (elapsedTime / 1000));
+			spec.velocity.x = directionX * (spec.moveRate * (elapsedTime / 1000));
+			spec.velocity.y = directionY * (spec.moveRate * (elapsedTime / 1000));
 		};
 
 		that.update = function(elapsedTime) {

@@ -292,7 +292,7 @@ function angleExplosionAnimation(spec, graphics) {
 							center: {x: spec.center.x, y: spec.center.y},
 							direction: {x : directionX, y : directionY},
 							speed: 64 - mod, // pixels per second
-							rotation: 0,
+							rotation: Random.nextCircleVector(),
 							lifetime: 3+(16-k*j),	// How long the particle should live, in seconds
 							alive: 0,	// How long the particle has been alive, in seconds
 							clipCoordinates : {x : j*32, y : k*32 }
