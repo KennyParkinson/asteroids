@@ -25,6 +25,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		explosions = [],
 		lastfire = 0,
 		canvas = document.getElementById('canvas-main'),
+		context = canvas.getContext('2d'),
 		lastfire = 0,
 		sfxvolume = .5,
 		missilefire1 = new Audio('assets/missilefire.wav'),
@@ -32,9 +33,12 @@ SPACEGAME.screens['game-play'] = (function() {
 		missilefire3 = new Audio('assets/missilefire.wav'),
 		missilefire4 = new Audio('assets/missilefire.wav'),
 		background = new Audio('assets/background.mp3'),
-		behaviors = ["fly", "turn", "shoot", "dodge"]
+		behaviors = ["launch", "fly", "turn", "shoot", "dodge", "deactivate"],
+		countDownTime = 3,
+		newLevel = true
 		SPACEGAME.accelerating = false;
 		SPACEGAME.level = 1;
+		
 
 	
 	function initialize() {
@@ -129,11 +133,9 @@ SPACEGAME.screens['game-play'] = (function() {
 				
 	}
 	function gameStart() {
+
 		missiles = [];
-		missiles.push(missile1);
-		missiles.push(missile2);
-		missiles.push(missile3);
-		missiles.push(missile4);
+		
 		asteroids = [];
 		var missilespeed = 400;
 		missile1 = SPACEGAME.graphics.missile( {
@@ -179,7 +181,10 @@ SPACEGAME.screens['game-play'] = (function() {
 				radius : 5,
 				moveRate : missilespeed,			// pixels per second
 		});
-		
+		missiles.push(missile1);
+		missiles.push(missile2);
+		missiles.push(missile3);
+		missiles.push(missile4);
 		exhaust = exhaustParticles( {
 			image : SPACEGAME.images['images/exhaust.png'],
 			center:myShip.getcenter(),
@@ -188,6 +193,7 @@ SPACEGAME.screens['game-play'] = (function() {
 			},
 			SPACEGAME.graphics
 		);
+		SPACEGAME.level = 1;
 		levelStart(SPACEGAME.level);
 	}
 	function levelStart(level) {
@@ -247,7 +253,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				height : 36,
 				direction: Random.nextCircleVector(),
 				moveRate : Random.nextRange(500, 600),
-				behavior : "fly",
+				behavior : "launch",
 				rotation : 0
 			});
 			enemies.push(enemy);
@@ -266,7 +272,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				height : 36,
 				direction: Random.nextCircleVector(),
 				moveRate : Random.nextRange(500, 600),
-				behavior : "fly",
+				behavior : "launch",
 				rotation : 0
 			});
 			enemies.push(enemy);
@@ -301,6 +307,17 @@ SPACEGAME.screens['game-play'] = (function() {
 		}
 	}
 	function update(elapsedTime) {
+		
+	if(newLevel)
+	{
+		countDownTime -= elapsedTime/1000;
+		if(countDownTime <= 0)
+		{
+			newLevel = false;
+		}
+	}
+	else
+	{
 		myKeyboard.update(SPACEGAME.elapsedTime);
 		if(myShip.isactive())
 		{
@@ -353,13 +370,15 @@ SPACEGAME.screens['game-play'] = (function() {
 		}
 		for(var i = 0; i < activeEnemies.length; ++i)
 		{
-			activeEnemies[i].accelerate(SPACEGAME.elapsedTime);
-			activeEnemies[i].update(SPACEGAME.elapsedTime);
+			enemyMove(activeEnemies[i], i);
 		}
 		//-------------------------------------------------------------
 		// checking for level completion (no asteroids and aliens gone)
-		if(asteroids.length === 0){
-			level ++;
+		if(asteroids.length === 0){//add check for aliens once that gets working
+			SPACEGAME.level ++;
+			newLevel = true;
+			countDownTime = 3;
+			levelStart(SPACEGAME.level);
 			//populateAsteroidsandAliens(level);
 		}
 
@@ -388,7 +407,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				collisions(allquads[i].shipsinQuad, allquads[i].AsteroidsinQuad);
 			}
 		};
-		
+	}//end else
 		// function split asteroids, ships and missiles into their respective quadrants
 		//
 		function quadrant(asteroids, missiles, myShip, x1, x2, y1, y2){
@@ -516,6 +535,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		 
 		  return Math.sqrt( xs + ys );
 		};
+	
 	}
 
 	function explode(centerPoint) {
@@ -528,30 +548,55 @@ SPACEGAME.screens['game-play'] = (function() {
 		explosions.push(explosion);
 	}
 
+	function explodeCircle(centerPoint) {
+		var explosion = {animation: explosionAnimation({
+			image : SPACEGAME.images["images/explodsprite.png"],
+			center :  centerPoint
+		},
+		SPACEGAME.graphics), lifetime : 10}
+		explosion.animation.create();
+		explosions.push(explosion);
+	}
+
+	function enemyMove(ship, index) {
+
+	}
+
 	function render(){
 		SPACEGAME.graphics.clear();
-		if(myShip.isactive())
+		if(newLevel)
 		{
-			exhaust.render();
-			myShip.draw();
+			context.font = "30px Verdana";
+			context.fillStyle ="rgba(0, 255, 51, 1)"
+			context.fillText("Starting in: ", 233, 105);
+			var text = Math.ceil(countDownTime);
+			context.fillText(text, 299, 135);
 		}
-		// drawing active missiles
-		for(var i = 0 ; i < missiles.length ; i++){
-			if (missiles[i].fired() === true){
-				missiles[i].draw();
+		else
+		{
+			if(myShip.isactive())
+			{
+				exhaust.render();
+				myShip.draw();
 			}
-		}
+			// drawing active missiles
+			for(var i = 0 ; i < missiles.length ; i++){
+				if (missiles[i].fired() === true){
+					missiles[i].draw();
+				}
+			}
 
-		for (var i = 0; i < asteroids.length; ++i) {
-			asteroids[i].draw();
-		};
-		for(var i = 0; i < activeEnemies.length; ++i)
-		{
-			activeEnemies[i].draw();
-		}
-		for(var i = 0; i < explosions.length; ++i)
-		{
-			explosions[i].animation.render();
+			for (var i = 0; i < asteroids.length; ++i) {
+				asteroids[i].draw();
+			};
+			for(var i = 0; i < activeEnemies.length; ++i)
+			{
+				activeEnemies[i].draw();
+			}
+			for(var i = 0; i < explosions.length; ++i)
+			{
+				explosions[i].animation.render();
+			}
 		}
 		
 	}

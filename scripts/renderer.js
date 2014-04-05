@@ -316,6 +316,14 @@ SPACEGAME.graphics = (function() {
 			return spec.active;
 		};
 
+		that.behavior = function() {
+			return spec.behavior;
+		};
+
+		that.changeBehavior = function(newBehavior) {
+			spec.behavior = newBehavior;
+		};
+
 		that.destroyed = function() {
 			spec.active = false;
 		};
@@ -381,8 +389,8 @@ SPACEGAME.graphics = (function() {
 		};
 
 		that.whatami = function() {
-			// ship = 1, missile = 2, asteroid = 3
-			return 1;
+			// ship = 1, missile = 2, asteroid = 3, enemyShip = 4, enemy missile = 5
+			return 4;
 		};
 		
 		that.draw = function() {
@@ -409,6 +417,14 @@ SPACEGAME.graphics = (function() {
 
 		that.isactive = function() {
 			return spec.active;
+		};
+
+		that.behavior = function() {
+			return spec.behavior;
+		};
+
+		that.changeBehavior = function(newBehavior) {
+			spec.behavior = newBehavior;
 		};
 
 		that.destroyed = function() {
@@ -477,7 +493,7 @@ SPACEGAME.graphics = (function() {
 
 		that.whatami = function() {
 			// ship = 1, missile = 2, asteroid = 3
-			return 1;
+			return 4;
 		};
 		
 		that.draw = function() {
