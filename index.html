@@ -7,6 +7,7 @@
 	<link rel = "stylesheet" type = "text/css" href = "game.css">
 	<script src = "scripts/modernizr.js"></script>
 	<script src = "scripts/loader.js"></script>
+	<script src = "scripts/settings.js"></script>
 </head>
 <body>
 	<div id = "game">
@@ -14,7 +15,7 @@
 			<ul class = "menu">
 				<li><button id = "id-new-game">New&nbsp;Game</button></li>
 				<li><button id = "id-high-scores">High&nbsp;Scores</button></li>
-				<li><button id = "id-help">Help</button></li>
+				<li><button id = "id-help">Settings</button></li>
 				<li><button id = "id-about">About</button></li>
 			</ul>
 		</div>
@@ -40,10 +41,26 @@
 			</ul>
 		</div>
 		<div id = "help" class = "screen">
-			<h1>Help</h1>
-			<p>Click the US Dollar and Roman coin to earn points, aviod the Canadian dollars they will reset your score. Click the clock for a few more coins to help you get past the level.</p>
+			<h1>Settings</h1>
 			<ul class = "menu">
-				<li><button id = "id-help-back">Back</button></li>
+				<li>
+					Accelerate<textarea  id="accelerate" onkeypress="Settings.setaccelerate;"></textarea>
+				</li>
+				<li>
+					Left<textarea  id="left" onkeypress="Settings.setleft();"></textarea>
+				</li>
+				<li>
+					Right<textarea  id="right" onkeypress="Settings.setright();"></textarea>
+				</li>
+				<li>
+					Fire<textarea  id="fire" onkeypress="Settings.setfire();"></textarea>
+				</li>
+				<li>
+					Hyperspace<textarea  id="Hyperspace" onkeypress="Settings.sethyperspace();"></textarea>
+				</li>
+				<li>
+					<button id = "id-help-back">Back</button>
+				</li>
 			</ul>
 		</div>
 		<div id = "about" class = "screen">

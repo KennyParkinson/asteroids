@@ -36,16 +36,18 @@ SPACEGAME.screens['game-play'] = (function() {
 		behaviors = ["launch", "fly", "turn", "shoot", "dodge", "deactivate"],
 		countDownTime = 3,
 		newLevel = true
+
 		SPACEGAME.accelerating = false;
 		SPACEGAME.level = 1;
+		SPACEGAME.lives = 3;
 		
 
 	
 	function initialize() {
 		console.log('game initializing...');
-		//--------------------------------------------------
+		//-----------------------------------------------------------------------------------------------------------
 		// This is the Ship Object
-		//--------------------------------------------------
+		//-----------------------------------------------------------------------------------------------------------
 		myShip = SPACEGAME.graphics.ship( {
 				image : SPACEGAME.images['images/spaceship.png'],
 				center : { x : 284, y : 177 },
@@ -53,28 +55,19 @@ SPACEGAME.screens['game-play'] = (function() {
 				active : true, 	
 				velocity : {x : 0, y : 0 }, // velocity of object with an x and y
 				vector : 0,             // magnitude of the vector
-				vectorx : 0,			// the x of vector
-				vectory : 0,			// the y of vector
-				lastx : 0,				// drift x
-				lasty : 0, 				// drift y
 				radius : 15,
 				rotation : 0,			// radians going clock wise
 				moveRate : 200,			// pixels per second
 				rotateRate : 3.14159	// Radians per second
 			});
-		//---------------------------------------------------
-		//	All 3 missiles
-		//---------------------------------------------------
 		
-
-		// Arrays of objects on the field
-		
-		
-		//---------------------------------------------------------------------
+		//--------------------------------------------------------------------------------------------------
 		// Create the keyboard input handler and register the keyboard commands
+		//--------------------------------------------------------------------------------------------------
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_A, myShip.rotateLeft);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_D, myShip.rotateRight);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_W, myShip.accelerate);
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_H, myShip.hyperspace);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_F, function () {
 			// enough time has elapsed since last missile fire
 			if(!myShip.isactive())
@@ -133,10 +126,13 @@ SPACEGAME.screens['game-play'] = (function() {
 				
 	}
 	function gameStart() {
-
+		// Empty arrays
 		missiles = [];
-		
 		asteroids = [];
+
+		//-----------------------------------------------------------------------------------------------------------
+		// These are the missile objects all 4 of them
+		//-----------------------------------------------------------------------------------------------------------
 		var missilespeed = 400;
 		missile1 = SPACEGAME.graphics.missile( {
 				image : SPACEGAME.images['images/projectile.png'],
@@ -185,6 +181,9 @@ SPACEGAME.screens['game-play'] = (function() {
 		missiles.push(missile2);
 		missiles.push(missile3);
 		missiles.push(missile4);
+		//----------------------------------------------------------------------------------------------
+		// Exhaust particle systems
+		//----------------------------------------------------------------------------------------------
 		exhaust = exhaustParticles( {
 			image : SPACEGAME.images['images/exhaust.png'],
 			center:myShip.getcenter(),
@@ -193,7 +192,10 @@ SPACEGAME.screens['game-play'] = (function() {
 			},
 			SPACEGAME.graphics
 		);
+
+		// Level set to one
 		SPACEGAME.level = 1;
+		// Start new level
 		levelStart(SPACEGAME.level);
 	}
 	function levelStart(level) {
@@ -472,16 +474,42 @@ SPACEGAME.screens['game-play'] = (function() {
 						var centerY = (center1.y + center2.y)/2;
 						if(array1[i].whatami() === 1 && array2[j].whatami() === 3)
 						{
+							//------------------------------if ship hits a missile
+							SPACEGAME.lives = SPACEGAME.lives - 1;
 							explode({x : centerX, y : centerY});
-						}
-								
-								// playing explosion sounds
+							
+							// playing explosion sounds
 							var explosion = new Audio('assets/explosion.wav');
 							explosion.volume = sfxvolume;
 							explosion.play();
-						
 								// end sounds
+							//-------------------------------------------------------------------
+							// lose a life if possible else game over // this code is buggyy...??
+							//-------------------------------------------------------------------
+							/*
+							if(SPACEGAME.lives <= 0){
+								//end of game
+								console.log("GAME OVER!");
+							}
+							else{
+								var open = false;
+								while(!open){
+									for(var ac = 0; ac < asteroids.length; ac++){
+										var theCenter = asteroids[ac].getcenter();
+										if(theCenter.x > 334 || theCenter.x < 234 && theCenter.y > 227 || theCenter.y < 127){
+												open = true;
+										}
+										else{
+											open = false;
+										}
+									}
+								}
+								//revive ship
+								myShip.revive();
+							}
+							*/
 
+						}
 
 						if(array2[j].whatami()===3)
 						{
@@ -614,8 +642,7 @@ SPACEGAME.screens['game-play'] = (function() {
 			{
 				explosions[i].animation.render();
 			}
-		}
-		
+		}	
 	}
 	
 	function run() {
