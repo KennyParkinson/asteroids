@@ -77,11 +77,17 @@ Collision Detection:
 		Draw smaller circles inside the larger circles to  compensate for the irregularity of the object.
 
 Kenny will work on:
-	Change controls and Asteroid Splitting and rotation and add Lives and Audio
-
+	Asteroid Splitting;
+	Lives;
+	Hyperspace;
+	scoring;
+	Change controls; 
+	Audio; - maybe Audio controls in settings (old help)
 
 Bryce Will work on:
-	Explosions, particle exhaust, Aliens
+	Aliens;
+	New Game;
+	Levels;
+	AI;
 
-	Move ship to centerDONE, prevent asteroid spawn on centerDONE
 

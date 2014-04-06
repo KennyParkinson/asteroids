@@ -182,8 +182,10 @@ SPACEGAME.graphics = (function() {
 			
 			var directionX = Math.cos(spec.rotation);
 			var directionY = Math.sin(spec.rotation);
+			
 			spec.center.x += spec.moveRate * directionX * elapsedTime /1000;
 			spec.center.y += spec.moveRate * directionY * elapsedTime / 1000;
+
 			if(spec.center.x >= canvas.width + 25)
 			{
 				spec.center.x = 0-25;
@@ -247,7 +249,6 @@ SPACEGAME.graphics = (function() {
 			
 			var directionX = Math.cos(spec.rotation);
 			var directionY = Math.sin(spec.rotation);
-			
 			spec.center.x += spec.moveRate * directionX * elapsedTime /1000;
 			spec.center.y += spec.moveRate * directionY * elapsedTime /1000;
 			
@@ -267,6 +268,7 @@ SPACEGAME.graphics = (function() {
 			{
 				spec.center.y = canvas.height;
 			}
+			spec.rotation += spec.moveRate / 10000;
 		};
 
 		that.getRadius = function() {
@@ -315,6 +317,14 @@ SPACEGAME.graphics = (function() {
 			return spec.active;
 		};
 
+		that.behavior = function() {
+			return spec.behavior;
+		};
+
+		that.changeBehavior = function(newBehavior) {
+			spec.behavior = newBehavior;
+		};
+
 		that.destroyed = function() {
 			spec.active = false;
 		};
@@ -342,8 +352,8 @@ SPACEGAME.graphics = (function() {
 		};
 
 		that.update = function(elapsedTime) {
-			spec.center.x += spec.velocity.x * elapsedTime /1000;
-			spec.center.y += spec.velocity.y * elapsedTime / 1000;
+			spec.center.x = spec.velocity.x * elapsedTime /1000;
+			spec.center.y = spec.velocity.y * elapsedTime / 1000;
 
 			if(spec.center.x >= canvas.width + 25)
 			{
@@ -380,8 +390,8 @@ SPACEGAME.graphics = (function() {
 		};
 
 		that.whatami = function() {
-			// ship = 1, missile = 2, asteroid = 3
-			return 1;
+			// ship = 1, missile = 2, asteroid = 3, enemyShip = 4, enemy missile = 5
+			return 4;
 		};
 		
 		that.draw = function() {
@@ -410,6 +420,14 @@ SPACEGAME.graphics = (function() {
 			return spec.active;
 		};
 
+		that.behavior = function() {
+			return spec.behavior;
+		};
+
+		that.changeBehavior = function(newBehavior) {
+			spec.behavior = newBehavior;
+		};
+
 		that.destroyed = function() {
 			spec.active = false;
 		};
@@ -432,8 +450,8 @@ SPACEGAME.graphics = (function() {
 			var directionX = Math.cos(spec.rotation);
 			var directionY = Math.sin(spec.rotation);
 
-			spec.velocity.x += directionX * (spec.moveRate * (elapsedTime / 1000));
-			spec.velocity.y += directionY * (spec.moveRate * (elapsedTime / 1000));
+			spec.velocity.x = directionX * (spec.moveRate * (elapsedTime / 1000));
+			spec.velocity.y = directionY * (spec.moveRate * (elapsedTime / 1000));
 		};
 
 		that.update = function(elapsedTime) {
@@ -476,7 +494,7 @@ SPACEGAME.graphics = (function() {
 
 		that.whatami = function() {
 			// ship = 1, missile = 2, asteroid = 3
-			return 1;
+			return 4;
 		};
 		
 		that.draw = function() {
