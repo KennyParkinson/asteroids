@@ -66,7 +66,25 @@ SPACEGAME.graphics = (function() {
 		that.destroyed = function() {
 			spec.active = false;
 		};
-		
+
+		that.revive = function() {
+			spec.active = true;
+			spec.center.x = canvas.width/2;
+			spec.center.y = canvas.height/2;
+			spec.velocity.x = 0;
+			spec.velocity.y = 0;
+			spec.vector = 0;
+			spec.rotation = 0;
+		};
+
+		that.hyperspace = function(){
+			// relocate ship to new center
+			spec.center.x = 0;
+			spec.center.y = 0;
+			// unless center is in an asteroid
+			// or make invulnerable for 2 seconds
+		};
+
 		that.rotateRight = function(elapsedTime) {
 			spec.rotation += spec.rotateRate * (elapsedTime / 1000);
 			// if the rotation is greater than 2PI radians +2PI radians
@@ -91,7 +109,7 @@ SPACEGAME.graphics = (function() {
 		};
 
 		that.update = function(elapsedTime) {
-			spec.center.x += spec.velocity.x * elapsedTime /1000;
+			spec.center.x += spec.velocity.x * elapsedTime / 1000;
 			spec.center.y += spec.velocity.y * elapsedTime / 1000;
 
 			if(spec.center.x >= canvas.width + 25)
@@ -182,8 +200,10 @@ SPACEGAME.graphics = (function() {
 			
 			var directionX = Math.cos(spec.rotation);
 			var directionY = Math.sin(spec.rotation);
+			
 			spec.center.x += spec.moveRate * directionX * elapsedTime /1000;
 			spec.center.y += spec.moveRate * directionY * elapsedTime / 1000;
+
 			if(spec.center.x >= canvas.width + 25)
 			{
 				spec.center.x = 0-25;
@@ -326,13 +346,12 @@ SPACEGAME.graphics = (function() {
 		};
 
 		that.update = function(elapsedTime) {
+			
 			var directionX = Math.cos(spec.rotation);
 			var directionY = Math.sin(spec.rotation);
-
-			spec.direction.x = directionX * (spec.moveRate * (elapsedTime / 1000));
-			spec.direction.y = directionY * (spec.moveRate * (elapsedTime / 1000));
-			spec.center.x += spec.moveRate * spec.direction.x * elapsedTime/1000;
-			spec.center.y += spec.moveRate * spec.direction.y * elapsedTime/1000;
+			spec.center.x += spec.moveRate * directionX * elapsedTime /1000;
+			spec.center.y += spec.moveRate * directionY * elapsedTime /1000;
+			
 			if(spec.center.x >= canvas.width)
 			{
 				spec.center.x = 0;
