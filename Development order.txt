@@ -87,7 +87,6 @@ Kenny will work on:
 Bryce Will work on:
 	Aliens;
 	New Game;
-	Levels;
 	AI;
 
 

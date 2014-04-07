@@ -56,7 +56,7 @@ SPACEGAME.graphics = (function() {
 
 	
 
-	function ship(spec) {
+	function ship(spec) {//make enemy ships match this
 		var that = {};
 
 		that.isactive = function() {
@@ -406,6 +406,10 @@ SPACEGAME.graphics = (function() {
 	function enemyCruiser(spec) {
 		var that = {};
 
+		that.setVelocity = function(newVelocity) {
+			spec.velocity = newVelocity;
+		};
+
 		that.isactive = function() {
 			return spec.active;
 		};
@@ -449,17 +453,29 @@ SPACEGAME.graphics = (function() {
 		};
 		
 		that.accelerate = function(elapsedTime) {
+			if(spec.behavior === "fly")
+			{
+				var dud = 0;
+			}
 			var directionX = Math.cos(spec.rotation);
 			var directionY = Math.sin(spec.rotation);
 
-			spec.velocity.x += directionX * (spec.moveRate * (elapsedTime / 1000));
-			spec.velocity.y += directionY * (spec.moveRate * (elapsedTime / 1000));
+			spec.velocity.x = directionX * (spec.moveRate * (elapsedTime / 1000));
+			spec.velocity.y = directionY * (spec.moveRate * (elapsedTime / 1000));
 		};
 
 		that.update = function(elapsedTime) {
+				
 			spec.center.x += spec.velocity.x * elapsedTime /1000;
 			spec.center.y += spec.velocity.y * elapsedTime / 1000;
-
+			if(spec.center === undefined)
+			{
+				var dud = 0;
+			}
+			if(isNaN(spec.center.x))
+			{
+				var dud = 0;
+			}
 			if(spec.center.x >= canvas.width + 51)
 			{
 				spec.behavior = "deactivate";
@@ -479,10 +495,6 @@ SPACEGAME.graphics = (function() {
 		};
 		
 		that.getcenter = function() {
-			if(isNaN(spec.center.x))
-			{
-				var dud = 0;
-			}
 			return (spec.center);
 		};
 
@@ -537,6 +549,10 @@ SPACEGAME.graphics = (function() {
 
 	function enemyCapital(spec) {
 		var that = {};
+
+		that.setVelocity = function(newVelocity) {
+			spec.velocity = newVelocity;
+		};
 
 		that.isactive = function() {
 			return spec.active;
@@ -593,8 +609,8 @@ SPACEGAME.graphics = (function() {
 		};
 
 		that.update = function(elapsedTime) {
-			spec.center.x += spec.velocity.x * elapsedTime /1000;
-			spec.center.y += spec.velocity.y * elapsedTime / 1000;
+			spec.center.x = spec.velocity.x * elapsedTime /1000;
+			spec.center.y = spec.velocity.y * elapsedTime / 1000;
 
 			if(spec.center.x >= canvas.width + 25)
 			{
