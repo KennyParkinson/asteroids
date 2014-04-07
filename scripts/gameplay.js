@@ -709,7 +709,10 @@ SPACEGAME.screens['game-play'] = (function() {
 			case "dodge" :
 				if(!ship.isCapital())
 				{
-					ship.setRotation(findClosestAsteroid(ship.getcenter()));
+					if(asteroids.length > 0){
+						ship.setRotation(findClosestAsteroid(ship.getcenter()));
+					}
+					
 				}
 				// if(left)
 				// {
