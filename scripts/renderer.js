@@ -254,6 +254,88 @@ SPACEGAME.graphics = (function() {
 		return that;
 	};
 
+	function enemymissile(spec) {
+		var that = {};
+		that.fire = function(shipcoords, shiptraj, shipspeed) {
+			// activiate missile
+			spec.active = true;
+			// set launch coordinates
+			spec.center.x = shipcoords.x;
+			spec.center.y = shipcoords.y;
+			// set trajectory
+			spec.rotation = shiptraj;
+		};
+
+		that.fired = function() {
+			return(spec.active);
+		};
+
+		that.destroyed = function() {
+			spec.active = false;
+		};
+			
+		that.update = function(elapsedTime) {
+			// if lifetime is past then disappear
+			spec.lifetime += elapsedTime/1000
+			if(spec.lifetime > 1.8){
+				spec.active = false;
+				spec.lifetime = 0;
+			}
+			
+			var directionX = Math.cos(spec.rotation);
+			var directionY = Math.sin(spec.rotation);
+			spec.center.x += spec.moveRate * directionX * elapsedTime /1000;
+			spec.center.y += spec.moveRate * directionY * elapsedTime / 1000;
+			if(spec.center.x >= canvas.width + 25)
+			{
+				spec.center.x = 0-25;
+			}
+			else if(spec.center.x <= 0-25)
+			{
+				spec.center.x = canvas.width + 25;
+			}
+			if(spec.center.y >= canvas.height + 25)
+			{
+				spec.center.y = 0-25;
+			}
+			else if(spec.center.y <= 0-25)
+			{
+				spec.center.y = canvas.height + 25;
+			}
+		};
+
+		that.getcenter = function() {
+			return (spec.center);
+		};
+
+		that.getRadius = function() {
+			return (spec.radius);
+		};
+
+		that.whatami = function() {
+			// ship = 1, missile = 2, asteroid = 3
+			return 2;
+		};
+		
+		that.draw = function() {
+			context.save();
+			
+			context.translate(spec.center.x, spec.center.y);
+			context.rotate(spec.rotation);
+			context.translate(-spec.center.x, -spec.center.y);
+			
+			context.drawImage(
+				spec.image, 
+				spec.center.x - spec.width/2, 
+				spec.center.y - spec.height/2);//,
+				//spec.width, spec.height);
+			
+			context.restore();
+		};
+		
+		return that;
+	};
+
 	function asteroid(spec){
 		var that = {};
 		that.destroyed = function() {
@@ -321,18 +403,23 @@ SPACEGAME.graphics = (function() {
 		return that;
 	};
 
-	function explosion(spec) {
-		var that = {};
-
-
-		return that;
-	};
-
 	function enemyCruiser(spec) {
 		var that = {};
 
 		that.isactive = function() {
 			return spec.active;
+		};
+
+		that.changeTime = function(elapsedTime) {
+			spec.timeToNextAction -= elapsedTime/1000
+		};
+
+		that.resetTime = function() {
+			spec.timeToNextAction = 2;
+		};
+
+		that.getTime = function() {
+			return spec.timeToNextAction;
 		};
 
 		that.behavior = function() {
@@ -370,28 +457,32 @@ SPACEGAME.graphics = (function() {
 		};
 
 		that.update = function(elapsedTime) {
-			spec.center.x = spec.velocity.x * elapsedTime /1000;
-			spec.center.y = spec.velocity.y * elapsedTime / 1000;
+			spec.center.x += spec.velocity.x * elapsedTime /1000;
+			spec.center.y += spec.velocity.y * elapsedTime / 1000;
 
-			if(spec.center.x >= canvas.width + 25)
+			if(spec.center.x >= canvas.width + 51)
 			{
-				spec.center.x = 0-25;
+				spec.behavior = "deactivate";
 			}
-			else if(spec.center.x <= 0-25)
+			else if(spec.center.x <= 0-51)
 			{
-				spec.center.x = canvas.width + 25;
+				spec.behavior = "deactivate";
 			}
 			if(spec.center.y >= canvas.height + 25)
 			{
-				spec.center.y = 0-25;
+				spec.behavior = "deactivate";
 			}
 			else if(spec.center.y <= 0-25)
 			{
-				spec.center.y = canvas.height + 25;
+				spec.behavior = "deactivate";
 			}
 		};
 		
 		that.getcenter = function() {
+			if(isNaN(spec.center.x))
+			{
+				var dud = 0;
+			}
 			return (spec.center);
 		};
 
@@ -411,7 +502,15 @@ SPACEGAME.graphics = (function() {
 			// ship = 1, missile = 2, asteroid = 3, enemyShip = 4, enemy missile = 5
 			return 4;
 		};
-		
+
+		that.isCapital = function() {
+			return false;
+		};
+
+		that.setRotation = function(angle) {
+			spec.rotation = angle;
+		};
+
 		that.draw = function() {
 			context.save();
 			
@@ -427,7 +526,12 @@ SPACEGAME.graphics = (function() {
 			
 			context.restore();
 		};
-		
+
+		that.setCenter = function(newCenter)
+		{
+			spec.center = newCenter;
+		};
+
 		return that;
 	};
 
@@ -438,8 +542,24 @@ SPACEGAME.graphics = (function() {
 			return spec.active;
 		};
 
+		that.isCapital = function() {
+			return true;
+		};
+
 		that.behavior = function() {
 			return spec.behavior;
+		};
+
+		that.resetTime = function() {
+			spec.timeToNextAction = 2;
+		};
+
+		that.changeTime = function(elapsedTime) {
+			spec.timeToNextAction -= elapsedTime/1000
+		};
+
+		that.getTime = function() {
+			return spec.timeToNextAction;
 		};
 
 		that.changeBehavior = function(newBehavior) {
@@ -478,19 +598,19 @@ SPACEGAME.graphics = (function() {
 
 			if(spec.center.x >= canvas.width + 25)
 			{
-				spec.center.x = 0-25;
+				spec.behavior = "deactivate";
 			}
 			else if(spec.center.x <= 0-25)
 			{
-				spec.center.x = canvas.width + 25;
+				spec.behavior = "deactivate";
 			}
 			if(spec.center.y >= canvas.height + 25)
 			{
-				spec.center.y = 0-25;
+				spec.behavior = "deactivate";
 			}
 			else if(spec.center.y <= 0-25)
 			{
-				spec.center.y = canvas.height + 25;
+				spec.behavior = "deactivate";
 			}
 		};
 		
@@ -511,7 +631,7 @@ SPACEGAME.graphics = (function() {
 		};
 
 		that.whatami = function() {
-			// ship = 1, missile = 2, asteroid = 3
+			// ship = 1, missile = 2, asteroid = 3, enemyship = 4, enemy missile = 5
 			return 4;
 		};
 		
@@ -530,6 +650,11 @@ SPACEGAME.graphics = (function() {
 			
 			context.restore();
 		};
+
+		that.setCenter = function(newCenter)
+		{
+			spec.center = newCenter;
+		};
 		
 		return that;
 	};
@@ -542,6 +667,7 @@ SPACEGAME.graphics = (function() {
 		missile : missile,
 		asteroid : asteroid,
 		enemyCruiser : enemyCruiser,
-		enemyCapital : enemyCapital
+		enemyCapital : enemyCapital,
+		enemymissile : enemymissile
 	};
 }());

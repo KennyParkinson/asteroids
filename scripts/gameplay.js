@@ -19,6 +19,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		cancelNextRequest = false,
 		enemyActivityCountdown = 0,
 		missiles = [],
+		enemyMissiles = [],
 		enemies = [],
 		activeEnemies = [],
 		asteroids = [],
@@ -34,6 +35,32 @@ SPACEGAME.screens['game-play'] = (function() {
 		missilefire4 = new Audio('assets/missilefire.wav'),
 		background = new Audio('assets/background.mp3'),
 		behaviors = ["launch", "fly", "turn", "shoot", "dodge", "deactivate"],
+		directions = [
+		{x : 1, y : 0},
+		{x : 0.86602540378, y : .5},
+		{x : .5, y : 0.86602540378},
+		{x : 0, y : 1},
+		{x : -.5, y : 0.86602540378},
+		{x : -0.86602540378, y : .5},
+		{x : -1, y : 0},
+		{x : -0.86602540378, y : -.5},
+		{x : -.5, y : -0.86602540378},
+		{x : 0, y : -1},
+		{x : .5, y : -0.86602540378},
+		{x : 0.86602540378, y : -.5}
+		],
+		startingPoints = [
+		{x : 0, y : 0},
+		{x : 0, y : canvas.width},
+		{x : 0, y : canvas.width/3 *2},
+		{x : 0, y : canvas.width/3},
+		{x : canvas.height, y : 0},
+		{x : canvas.height/3*2, y : 0},
+		{x : canvas.height/3, y : 0},
+		{x : canvas.height, y : canvas.width},
+		{x : canvas.height/3*2, y : canvas.width/3*2},
+		{x : canvas.height/3, y : canvas.width/3},
+		],
 		countDownTime = 3,
 		newLevel = true
 
@@ -128,6 +155,7 @@ SPACEGAME.screens['game-play'] = (function() {
 	function gameStart() {
 		// Empty arrays
 		missiles = [];
+		enemyMissiles = [];
 		asteroids = [];
 
 		//-----------------------------------------------------------------------------------------------------------
@@ -256,14 +284,17 @@ SPACEGAME.screens['game-play'] = (function() {
 			
 			var enemy = SPACEGAME.graphics.enemyCruiser({
 				image : SPACEGAME.images['images/enemy.png'],
-				center : {x : startingX, y : startingY},
+				center : startingPoints[Random.nextRange(0, startingPoints.length)],
 				velocity : {x : 0, y : 0 },	
 				width : 75,
 				height : 36,
-				direction: Random.nextCircleVector(),
+				active : true,
+				radius : 35,
+				direction: directions[Random.nextRange(0, directions.length)],
 				moveRate : Random.nextRange(500, 600),
 				behavior : "launch",
-				rotation : 0
+				rotation : 0,
+				timeToNextAction : 2
 			});
 			enemies.push(enemy);
 		}
@@ -276,13 +307,16 @@ SPACEGAME.screens['game-play'] = (function() {
 			var enemy = SPACEGAME.graphics.enemyCruiser({
 				image : SPACEGAME.images['images/capitalShip.png'],
 				velocity : {x : 0, y : 0 },	
-				center : {x : startingX, y : startingY},
+				center : startingPoints[Random.nextRange(0, startingPoints.length)],
 				width : 75,
 				height : 36,
-				direction: Random.nextCircleVector(),
+				active : true,
+				radius : 50,
+				direction: directions[Random.nextRange(0, directions.length)],
 				moveRate : Random.nextRange(500, 600),
 				behavior : "launch",
-				rotation : 0
+				rotation : 0,
+				timeToNextAction : 2
 			});
 			enemies.push(enemy);
 		}
@@ -376,10 +410,19 @@ SPACEGAME.screens['game-play'] = (function() {
 		{
 			enemyActivityCountdown = 3;
 			activeEnemies.push(enemies.shift());
+			activeEnemies[activeEnemies.length - 1].changeBehavior("launch");
 		}
 		for(var i = 0; i < activeEnemies.length; ++i)
 		{
-			enemyMove(activeEnemies[i], i);
+			if(activeEnemies[i].isactive())
+			{
+				activeEnemies[i].changeTime(SPACEGAME.elapsedTime);
+				enemyMove(activeEnemies[i], i);
+			}
+			else
+			{
+				activeEnemies.splice(i, 1);
+			}
 		}
 		//-------------------------------------------------------------
 		// checking for level completion (no asteroids and aliens gone)
@@ -396,10 +439,10 @@ SPACEGAME.screens['game-play'] = (function() {
 		//			Qadrants for our 568 x 354 with a 50 px overlap
 		//      qI (-25, -25)(309, 202)  	qII (259, -25)(593, 202)
 		//		qIII (-25, 152)(309, 379) 	qIV (259, 152)(593, 379)
-		var quad1 = quadrant (asteroids, missiles, myShip, -25, 309, -25, 202);
-		var quad2 = quadrant (asteroids, missiles, myShip, 259, 593, -25, 202);
-		var quad3 = quadrant (asteroids, missiles, myShip, -25, 309, 152, 379);
-		var quad4 = quadrant (asteroids, missiles, myShip, 259, 593, 152, 379);
+		var quad1 = quadrant (asteroids, missiles, myShip, activeEnemies, -25, 309, -25, 202);
+		var quad2 = quadrant (asteroids, missiles, myShip, activeEnemies, 259, 593, -25, 202);
+		var quad3 = quadrant (asteroids, missiles, myShip, activeEnemies, -25, 309, 152, 379);
+		var quad4 = quadrant (asteroids, missiles, myShip, activeEnemies, 259, 593, 152, 379);
 		var allquads = [];
 		allquads.push(quad1);
 		allquads.push(quad2);
@@ -415,15 +458,24 @@ SPACEGAME.screens['game-play'] = (function() {
 			{
 				collisions(allquads[i].shipsinQuad, allquads[i].AsteroidsinQuad);
 			}
+			// if(allquads[i].enemiesinQuad.length > 0 &&allquads[i].AsteroidsinQuad.length > 0)
+			// {
+			// 	collisions(allquads[i].enemiesinQuad, allquads[i].AsteroidsinQuad);
+			// }
+			// if(allquads[i].missilesinQuad.length > 0 &&allquads[i].enemiesinQuad.length > 0)
+			// {
+			// 	collisions(allquads[i].missilesinQuad, allquads[i].enemiesinQuad);
+			// }
 		};
 	}//end else
 		// function split asteroids, ships and missiles into their respective quadrants
 		//
-		function quadrant(asteroids, missiles, myShip, x1, x2, y1, y2){
+		function quadrant(asteroids, missiles, myShip, activeEnemies, x1, x2, y1, y2){
 			var quad = {
 				missilesinQuad : [],
 				shipsinQuad : [],
-				AsteroidsinQuad : []
+				AsteroidsinQuad : [],
+				enemiesinQuad : []
 			};
 			
 			//-----------------------------------------------------------
@@ -449,6 +501,12 @@ SPACEGAME.screens['game-play'] = (function() {
 					if(missiles[count2].fired()){
 						quad.missilesinQuad.push(missiles[count2]);
 					}
+				}
+			}
+			for(var count2 = 0; count2 < activeEnemies.length; count2++){
+				var enemyCenter = activeEnemies[count2].getcenter();
+				if(enemyCenter.x > x1 && enemyCenter.x < x2 && enemyCenter.y > y1 && enemyCenter.y < y2 && !activeEnemies[count2].isCapital()){
+					quad.enemiesinQuad.push(activeEnemies[count2]);
 				}
 			}
 			// sending back array of 
@@ -567,8 +625,8 @@ SPACEGAME.screens['game-play'] = (function() {
 				}
 			}
 		};
-
-		function lineDistance( point1, point2 ){
+	}
+	function lineDistance( point1, point2 ) {
 		  var xs = 0;
 		  var ys = 0;
 		 
@@ -579,8 +637,6 @@ SPACEGAME.screens['game-play'] = (function() {
 		  ys = ys * ys;
 		 
 		  return Math.sqrt( xs + ys );
-		};
-	
 	}
 
 	function explode(centerPoint) {
@@ -588,7 +644,7 @@ SPACEGAME.screens['game-play'] = (function() {
 			image : SPACEGAME.images["images/explodsprite.png"],
 			center :  centerPoint
 		},
-		SPACEGAME.graphics), lifetime : 10}
+		SPACEGAME.graphics), lifetime : 6}
 		explosion.animation.create();
 		explosions.push(explosion);
 	}
@@ -598,14 +654,102 @@ SPACEGAME.screens['game-play'] = (function() {
 			image : SPACEGAME.images["images/explodsprite.png"],
 			center :  centerPoint
 		},
-		SPACEGAME.graphics), lifetime : 10}
+		SPACEGAME.graphics), lifetime : 6}
 		explosion.animation.create();
 		explosions.push(explosion);
 	}
 
 	function enemyMove(ship, index) {
+		var behavior = ship.behavior();
+		var randY = Math.random()*canvas.height;
+		var coin = Math.floor(Math.random()*10)%2;
+		if(coin === 0)
+		{
+			var left = true;
+		}
+		switch(behavior)
+		{
+			
+			case "launch" :
+				ship.changeBehavior("fly");
+				break;
+			case "deactivate" :
+				ship.changeBehavior("launch");
+				enemies.push(activeEnemies[index]);
+				activeEnemies.splice(index, 1);
+				break;
+			case "turn" :
+				if(left)
+				{
+					ship.rotateLeft(SPACEGAME.elapsedTime);
+				}
+				else
+				{
+					ship.rotateRight(SPACEGAME.elapsedTime);
+				}
+				break;
+			case "shoot" :
+				var missilespeed = 400;
+				missile1 = SPACEGAME.graphics.enemymissile( {
+						image : SPACEGAME.images['images/enemyprojectile.png'],
+						center : { x : 0, y : 0},
+						width : 10, height : 10,
+						lifetime : 0,			// time to check against performance.now() for lifetime
+						active : false,			// if object should be displayed 
+						rotation : 0,			// radians going clock wise
+						radius : 10,
+						moveRate : missilespeed,			// pixels per second
+				});
+				enemyMissiles.push(missile1);
+				enemyMissiles[enemyMissiles.length - 1].fire(ship.getcenter(), ship.gettraj(), ship.getspeed());
+				break;
 
+			case "fly" :
+				ship.accelerate(SPACEGAME.elapsedTime);
+				break;
+			case "dodge" :
+				if(!ship.isCapital())
+				{
+					ship.setRotation(findClosestAsteroid(ship.getcenter()));
+				}
+				ship.accelerate(SPACEGAME.elapsedTime);
+				break;
+			
+			
+		}
+		var centerPoint = ship.getcenter();
+		if(ship.getTime() < 0)
+		{
+			var random = Math.floor(Random.nextRange(1, 4));
+			ship.changeBehavior(behaviors[random]);
+			ship.resetTime();
+		}
+		ship.update(SPACEGAME.elapsedTime);
 	}
+
+	function findClosestAsteroid(centerPoint)
+	{
+		var min = Infinity;
+		var index;
+		for(var i = 0; i < asteroids.length; ++i)
+		{
+			var asteroidCenter = asteroids[i].getcenter();
+			var dist = lineDistance(centerPoint, asteroidCenter);
+			if(dist < min)
+			{
+				min = dist;
+				index = i;
+			}
+		}
+		return getVectorFromPoints(asteroids[index].getcenter(), centerPoint);
+	}
+
+	function getVectorFromPoints(point1, point2)
+	{ 
+		var xDiff = point2.x - point1.x; 
+		var yDiff = point2.y - point1.y; 
+		return Math.atan2(yDiff, xDiff); 
+	} 
 
 	function render(){
 		SPACEGAME.graphics.clear();
@@ -613,6 +757,8 @@ SPACEGAME.screens['game-play'] = (function() {
 		{
 			context.font = "30px Verdana";
 			context.fillStyle ="rgba(0, 255, 51, 1)"
+			context.shadowBlur=20;
+			context.shadowColor="black";
 			context.fillText("Starting in: ", 233, 105);
 			var text = Math.ceil(countDownTime);
 			context.fillText(text, 299, 135);
