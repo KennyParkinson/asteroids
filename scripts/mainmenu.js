@@ -15,6 +15,8 @@ SPACEGAME.screens['main-menu'] = (function() {
 			'click',
 			function() { 
 				SPACEGAME.game.showScreen('game-play');
+				//here I need to call the newgame initialization
+				SPACEGAME.screens['game-play'].gameStart();
 				 },
 			false);
 
