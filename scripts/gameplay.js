@@ -309,6 +309,7 @@ SPACEGAME.screens['game-play'] = (function() {
 	function gameStart() {
 		// Empty arrays
 		context.clear();
+		$("#submitScoreInput").hide();
 		missiles.length = 0;
 		enemyMissiles.length = 0;
 		asteroids.length = 0;
@@ -453,7 +454,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				height : 36,
 				active : true,
 				radius : 35,
-				moveRate : 200,
+				moveRate : 100,
 				behavior : "launch",
 				rotation : 0,
 				timeToNextAction : 2
@@ -475,7 +476,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				active : true,
 				radius : 50,
 				velocity: directions[Random.nextRange(0, directions.length)],
-				moveRate : 100,
+				moveRate : 75,
 				behavior : "launch",
 				rotation : 0,
 				timeToNextAction : 1
@@ -623,10 +624,10 @@ SPACEGAME.screens['game-play'] = (function() {
 			{
 				collisions(allquads[i].shipsinQuad, allquads[i].AsteroidsinQuad);
 			}
-			// if(allquads[i].enemiesinQuad.length > 0 &&allquads[i].AsteroidsinQuad.length > 0)
-			// {
-			// 	collisions(allquads[i].enemiesinQuad, allquads[i].AsteroidsinQuad);
-			// }
+			if(allquads[i].enemiesinQuad.length > 0 &&allquads[i].AsteroidsinQuad.length > 0)
+			{
+				collisions(allquads[i].enemiesinQuad, allquads[i].AsteroidsinQuad);
+			}
 			if(allquads[i].missilesinQuad.length > 0 &&allquads[i].enemiesinQuad.length > 0)
 			{
 				collisions(allquads[i].missilesinQuad, allquads[i].enemiesinQuad);
@@ -634,6 +635,10 @@ SPACEGAME.screens['game-play'] = (function() {
 			if(allquads[i].shipsinQuad.length > 0 &&allquads[i].enemiesinQuad.length > 0)
 			{
 				collisions(allquads[i].shipsinQuad, allquads[i].enemiesinQuad);
+			}
+			if(allquads[i].shipsinQuad.length > 0 &&allquads[i].enemyMissilesinQuad.length > 0)
+			{
+				collisions(allquads[i].shipsinQuad, allquads[i].enemyMissilesinQuad);
 			}
 		};
 	}//end else
@@ -644,7 +649,8 @@ SPACEGAME.screens['game-play'] = (function() {
 				missilesinQuad : [],
 				shipsinQuad : [],
 				AsteroidsinQuad : [],
-				enemiesinQuad : []
+				enemiesinQuad : [],
+				enemyMissilesinQuad : []
 			};
 			
 			//-----------------------------------------------------------
@@ -676,6 +682,14 @@ SPACEGAME.screens['game-play'] = (function() {
 				var enemyCenter = activeEnemies[count2].getcenter();
 				if(enemyCenter.x > x1 && enemyCenter.x < x2 && enemyCenter.y > y1 && enemyCenter.y < y2 && !activeEnemies[count2].isCapital()){
 					quad.enemiesinQuad.push(activeEnemies[count2]);
+				}
+			}
+			for(var count2 = 0; count2 < enemyMissiles.length; count2++){
+				var enemyCenter = enemyMissiles[count2].getcenter();
+				if(enemyCenter.x > x1 && enemyCenter.x < x2 && enemyCenter.y > y1 && enemyCenter.y < y2 && !activeEnemies[count2].isCapital()){
+					if(enemyMissiles[count2].fired()){
+					quad.enemyMissilesinQuad.push(enemyMissiles[count2]);
+				}
 				}
 			}
 			// sending back array of 
@@ -933,7 +947,24 @@ SPACEGAME.screens['game-play'] = (function() {
 				break;
 			case "shoot" :
 				var missilespeed = 400;
-				var enemyMissile1 = SPACEGAME.graphics.enemymissile( {
+				if(!ship.isCapital)
+				{
+					var enemyMissile1 = SPACEGAME.graphics.enemymissile( {
+							image : SPACEGAME.images['images/enemyprojectile.png'],
+							center : { x : 0, y : 0},
+							width : 10, height : 10,
+							lifetime : 0,			// time to check against performance.now() for lifetime
+							active : false,			// if object should be displayed 
+							rotation : 0,			// radians going clock wise
+							radius : 10,
+							moveRate : missilespeed,			// pixels per second
+					});
+					enemyMissiles.push(enemyMissile1);
+					enemyMissiles[enemyMissiles.length - 1].fire(ship.getcenter(), ship.gettraj(), ship.getspeed());
+				}
+				else
+				{
+					var enemyMissile1 = SPACEGAME.graphics.enemymissile( {
 						image : SPACEGAME.images['images/enemyprojectile.png'],
 						center : { x : 0, y : 0},
 						width : 10, height : 10,
@@ -944,7 +975,9 @@ SPACEGAME.screens['game-play'] = (function() {
 						moveRate : missilespeed,			// pixels per second
 				});
 				enemyMissiles.push(enemyMissile1);
-				enemyMissiles[enemyMissiles.length - 1].fire(ship.getcenter(), ship.gettraj(), ship.getspeed());
+				enemyMissiles[enemyMissiles.length - 1].fire(ship.getcenter(), getVectorFromPoints(ship.getcenter(), myShip.getcenter()), ship.getspeed());
+				
+				}
 				break;
 
 			case "fly" :
@@ -954,7 +987,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				if(!ship.isCapital())
 				{
 					if(asteroids.length > 0){
-						ship.setRotation(findClosestAsteroid(ship.getcenter()));
+						ship.setRotation(findClosestAsteroid(ship.getcenter()) + Math.PI);
 					}
 					
 				}
