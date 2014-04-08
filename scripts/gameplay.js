@@ -194,13 +194,125 @@ SPACEGAME.screens['game-play'] = (function() {
 		
 				
 	}
+
+	function createShip() {
+		var theShip = SPACEGAME.graphics.ship( {
+				image : SPACEGAME.images['images/spaceship.png'],
+				center : { x : canvas.width/2, y : canvas.height/2 },
+				width : 30, height : 30,
+				active : true, 	
+				velocity : {x : 0, y : 0 }, // velocity of object with an x and y
+				vector : 0,             // magnitude of the vector
+				radius : 15,
+				rotation : 0,			// radians going clock wise
+				moveRate : 200,			// pixels per second
+				rotateRate : 3.14159	// Radians per second
+			});
+		return theShip;
+	}
+	function buildKeyboard() {
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_A, myShip.rotateLeft);
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_D, myShip.rotateRight);
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_W, myShip.accelerate);
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_H, function(){
+			
+				var now = performance.now();
+				if((now - SPACEGAME.lastHyper)/1000 <=1 || SPACEGAME.numHypers <=0)
+					return;
+				else
+				{
+					SPACEGAME.lastHyper = performance.now();
+					SPACEGAME.numHypers--;
+
+					var newx = Random.nextRange(0, canvas.width);
+					var newy = Random.nextRange(0, canvas.height);
+					while(isSafe(newx, newy) === false){
+						newx = Random.nextRange(0, canvas.width);//something new
+						newy = Random.nextRange(0, canvas.height);// something new
+					}
+					myShip.hyperspace(newx, newy);
+				}
+			
+		});
+		var isSafe = function(x, y){ /// here is the issue-----------------------------------------------------------------------------------------------------
+				var returnval = false;
+				// if 100 px. radius exists around ship return true
+				for (var zcount = 0; zcount < asteroids.length ; zcount++){
+					var zcenter = asteroids[zcount].getcenter();
+					var safezone = 100;
+					if(zcenter.x <= x + safezone && zcenter.x >= x - safezone && zcenter.y <= y + safezone && zcenter.y >= y - safezone){
+						returnval = false;
+					}
+					else{
+						returnval = true;
+					}		
+				}
+				// return if x, y location is safe
+				return returnval;
+
+		};
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_F, function () {
+			// enough time has elapsed since last missile fire
+			if(!myShip.isactive())
+				return;
+			if (performance.now() > lastfire + 150){
+				//
+				// Check missiles to see if they can be fired and fire first available missile
+				// missile sound volume
+				var missilesound = sfxvolume;
+
+				if (missile1.fired() === false){
+					lastfire = performance.now();
+					missile1.fire(myShip.getcenter(), myShip.gettraj(), myShip.getspeed());
+					missilefire1.volume = missilesound; 
+					missilefire1.play();
+					console.log("launch missile 1");
+				}
+				else if (missile2.fired() === false){
+					lastfire = performance.now();
+					missile2.fire(myShip.getcenter(), myShip.gettraj(), myShip.getspeed());
+					missilefire2.volume = missilesound;
+					missilefire2.play();
+					console.log("launch missile 2");
+				}
+				else if ( missile3.fired() === false){
+					lastfire = performance.now();
+					missile3.fire(myShip.getcenter(), myShip.gettraj(), myShip.getspeed());
+					missilefire3.volume = missilesound;
+					missilefire3.play();
+					console.log("launch missile 3");
+				}
+				else if ( missile4.fired() === false){
+					lastfire = performance.now();
+					missile4.fire(myShip.getcenter(), myShip.gettraj(), myShip.getspeed());
+					missilefire4.volume = missilesound;
+					missilefire4.play();
+					console.log("launch missile 4");
+				}
+				else{console.log("all missiles fired");}
+			}
+		});
+		myKeyboard.registerCommand(KeyEvent.DOM_VK_ESCAPE, function () {
+			//
+			// Stop the game loop by canceling the request for the next animation frame
+			cancelNextRequest = true;
+			//
+			// Stop the music
+			background.pause();
+			//
+			// Then, return to the main menu
+			SPACEGAME.game.showScreen('main-menu');
+		});
+	}
+
 	function gameStart() {
 		// Empty arrays
-		missiles = [];
-		enemyMissiles = [];
-		asteroids = [];
-		SPACEGAME.numHypers = 3;
-
+		context.clear();
+		missiles.length = 0;
+		enemyMissiles.length = 0;
+		asteroids.length = 0;
+		myShip = createShip();
+		buildKeyboard();
 		//-----------------------------------------------------------------------------------------------------------
 		// These are the missile objects all 4 of them
 		//-----------------------------------------------------------------------------------------------------------
@@ -266,10 +378,12 @@ SPACEGAME.screens['game-play'] = (function() {
 
 		// Level set to one
 		SPACEGAME.level = 1;
-		// Start new level
+		//reset important new-game info
 		SPACEGAME.lives = 3;
 		SPACEGAME.score = 0;
 		SPACEGAME.scoreSinceLastLife = 0;
+		SPACEGAME.numHypers = 3;
+		// Start new level
 		levelStart(SPACEGAME.level);
 	}
 	function levelStart(level) {
