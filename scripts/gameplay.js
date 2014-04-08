@@ -954,6 +954,7 @@ SPACEGAME.screens['game-play'] = (function() {
 	
 	return {
 		initialize : initialize,
-		run : run
+		run : run,
+		gameStart: gameStart
 	};
 }());
