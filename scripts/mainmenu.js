@@ -13,6 +13,13 @@ SPACEGAME.screens['main-menu'] = (function() {
 		// Setup each of menu events for the screens
 		document.getElementById('id-new-game').addEventListener(
 			'click',
+			function() { 
+				SPACEGAME.game.showScreen('game-play');
+				 },
+			false);
+
+		document.getElementById('id-continue').addEventListener(
+			'click',
 			function() { SPACEGAME.game.showScreen('game-play'); },
 			false);
 		

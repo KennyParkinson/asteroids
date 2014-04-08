@@ -79,11 +79,11 @@ Collision Detection:
 Kenny will work on:
 	Asteroid Splitting;
 	Lives;
-	Hyperspace;
+	Hyperspace; kinda doneish
 	scoring;
 
 	Change controls; 
-	
+
 	Audio; - maybe Audio controls in settings (old help)
 
 Bryce Will work on:
