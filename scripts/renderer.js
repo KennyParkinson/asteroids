@@ -405,7 +405,8 @@ SPACEGAME.graphics = (function() {
 		var that = {};
 
 		that.setVelocity = function(newVelocity) {
-			spec.velocity = newVelocity;
+			spec.velocity.x = newVelocity.x;
+			spec.velocity.y = newVelocity.y;
 		};
 
 		that.isactive = function() {
@@ -455,17 +456,16 @@ SPACEGAME.graphics = (function() {
 			{
 				var dud = 0;
 			}
+
 			var directionX = Math.cos(spec.rotation);
 			var directionY = Math.sin(spec.rotation);
 
-			spec.velocity.x = directionX * (spec.moveRate * (elapsedTime / 1000));
-			spec.velocity.y = directionY * (spec.moveRate * (elapsedTime / 1000));
+			spec.velocity.x += directionX * (spec.moveRate * (elapsedTime / 1000));
+			spec.velocity.y += directionY * (spec.moveRate * (elapsedTime / 1000));
 		};
 
 		that.update = function(elapsedTime) {
 				
-			spec.center.x += spec.velocity.x * elapsedTime /1000;
-			spec.center.y += spec.velocity.y * elapsedTime / 1000;
 			if(spec.center === undefined)
 			{
 				var dud = 0;
@@ -474,6 +474,13 @@ SPACEGAME.graphics = (function() {
 			{
 				var dud = 0;
 			}
+			if(spec.velocity === undefined)
+			{
+				spec.velocity = {x :0, y:0};
+			}
+			spec.center.x += spec.velocity.x * elapsedTime /1000;
+			spec.center.y += spec.velocity.y * elapsedTime / 1000;
+			
 			if(spec.center.x >= canvas.width + 51)
 			{
 				spec.behavior = "deactivate";
@@ -539,7 +546,8 @@ SPACEGAME.graphics = (function() {
 
 		that.setCenter = function(newCenter)
 		{
-			spec.center = newCenter;
+			spec.center.x = newCenter.x;
+			spec.center.y = newCenter.y;
 		};
 
 		return that;
@@ -549,7 +557,8 @@ SPACEGAME.graphics = (function() {
 		var that = {};
 
 		that.setVelocity = function(newVelocity) {
-			spec.velocity = newVelocity;
+			spec.velocity.x = newVelocity.x;
+			spec.velocity.y = newVelocity.y;
 		};
 
 		that.isactive = function() {
@@ -667,7 +676,8 @@ SPACEGAME.graphics = (function() {
 
 		that.setCenter = function(newCenter)
 		{
-			spec.center = newCenter;
+			spec.center.x = newCenter.x;
+			spec.center.y = newCenter.y;
 		};
 		
 		return that;
