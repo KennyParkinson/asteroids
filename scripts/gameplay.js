@@ -62,7 +62,8 @@ SPACEGAME.screens['game-play'] = (function() {
 		{x : canvas.height/3, y : canvas.width/3},
 		],
 		countDownTime = 3,
-		newLevel = true
+		newLevel = true,
+		lastHyper = 0
 
 		SPACEGAME.accelerating = false;
 		SPACEGAME.level = 1;
@@ -95,31 +96,36 @@ SPACEGAME.screens['game-play'] = (function() {
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_D, myShip.rotateRight);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_W, myShip.accelerate);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_H, function(){
-			var newx = Random.nextRange(0, canvas.width);
-			var newy = Random.nextRange(0, canvas.height);
-			while(!isSafe(newx, newy)){
-				newx = Random.nextRange(0, canvas.width);//something new
-				newy = Random.nextRange(0, canvas.height);// something new
-			}
-			myShip.hyperspace(newx, newy);
-			// function used to check if safe radius exists around the ship
-			var isSafe = function(x, y){ /// here is the issue-----------------------------------------------------------------------------------------------------
+			
+			
+				lastHyper = performance.now();
+
+				var newx = Random.nextRange(0, canvas.width);
+				var newy = Random.nextRange(0, canvas.height);
+				while(isSafe(newx, newy) === false){
+					newx = Random.nextRange(0, canvas.width);//something new
+					newy = Random.nextRange(0, canvas.height);// something new
+				}
+				myShip.hyperspace(newx, newy);
+			
+		});
+		var isSafe = function(x, y){ /// here is the issue-----------------------------------------------------------------------------------------------------
 				var returnval = false;
 				// if 100 px. radius exists around ship return true
 				for (var zcount = 0; zcount < asteroids.length ; zcount++){
-					zcenter = asteroids[zcount].getcenter();
-					if(zcenter.x <= x+50 || zcenter.x >= x-50 && zcenter.y <= y+50 || zcenter.y >= y-50){
+					var zcenter = asteroids[zcount].getcenter();
+					var safezone = 100;
+					if(zcenter.x <= x + safezone && zcenter.x >= x - safezone && zcenter.y <= y + safezone && zcenter.y >= y - safezone){
 						returnval = false;
 					}
 					else{
 						returnval = true;
-					}
-
+					}		
 				}
 				// return if x, y location is safe
 				return returnval;
-			};
-		});
+
+		};
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_F, function () {
 			// enough time has elapsed since last missile fire
 			if(!myShip.isactive())
