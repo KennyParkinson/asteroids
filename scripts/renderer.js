@@ -77,12 +77,10 @@ SPACEGAME.graphics = (function() {
 			spec.rotation = 0;
 		};
 
-		that.hyperspace = function(){
+		that.hyperspace = function(x, y){
 			// relocate ship to new center
-			spec.center.x = 0;
-			spec.center.y = 0;
-			// unless center is in an asteroid
-			// or make invulnerable for 2 seconds
+			spec.center.x = x;
+			spec.center.y = y;
 		};
 
 		that.rotateRight = function(elapsedTime) {

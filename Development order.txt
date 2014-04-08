@@ -81,7 +81,9 @@ Kenny will work on:
 	Lives;
 	Hyperspace;
 	scoring;
+
 	Change controls; 
+	
 	Audio; - maybe Audio controls in settings (old help)
 
 Bryce Will work on:
