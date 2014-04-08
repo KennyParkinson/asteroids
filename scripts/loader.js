@@ -20,6 +20,7 @@ window.addEventListener('load', function() {
 	Modernizr.load([
 		{
 			load : [
+				'preload!scripts/jquery.js',
 				'preload!scripts/random.js',
 				'preload!scripts/renderer.js',
 				'preload!scripts/particle-system.js',

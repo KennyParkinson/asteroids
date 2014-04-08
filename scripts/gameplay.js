@@ -68,6 +68,9 @@ SPACEGAME.screens['game-play'] = (function() {
 		SPACEGAME.accelerating = false;
 		SPACEGAME.level = 1;
 		SPACEGAME.lives = 3;
+		SPACEGAME.score = 0;
+		SPACEGAME.scoreSinceLastLife = 0;
+		SPACEGAME.gameOver = false;
 		
 
 	
@@ -78,7 +81,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		//-----------------------------------------------------------------------------------------------------------
 		myShip = SPACEGAME.graphics.ship( {
 				image : SPACEGAME.images['images/spaceship.png'],
-				center : { x : 284, y : 177 },
+				center : { x : canvas.width/2, y : canvas.height/2 },
 				width : 30, height : 30,
 				active : true, 	
 				velocity : {x : 0, y : 0 }, // velocity of object with an x and y
@@ -255,6 +258,9 @@ SPACEGAME.screens['game-play'] = (function() {
 		// Level set to one
 		SPACEGAME.level = 1;
 		// Start new level
+		SPACEGAME.lives = 3;
+		SPACEGAME.score = 0;
+		SPACEGAME.scoreSinceLastLife = 0;
 		levelStart(SPACEGAME.level);
 	}
 	function levelStart(level) {
@@ -273,7 +279,7 @@ SPACEGAME.screens['game-play'] = (function() {
 			var thisX = Random.nextRange(0, canvas.width);
 			var thisY = Random.nextRange(0, canvas.height);
 			//verifying asteroids don't spawn on top of ship
-			while( thisX < 334 && thisX > 234 && thisY < 227 && thisY > 127){
+			while( thisX < canvas.width/2 +75 && thisX > canvas.width/2 - 75 && thisY < canvas.height/2 +75 && thisY > canvas.height/2 -75){
 				thisX = Random.nextRange(0, canvas.width);
 				thisY = Random.nextRange(0, canvas.height);
 			}
@@ -321,7 +327,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				height : 36,
 				active : true,
 				radius : 35,
-				moveRate : Random.nextRange(600, 650),
+				moveRate : 350,
 				behavior : "launch",
 				rotation : 0,
 				timeToNextAction : 2
@@ -343,7 +349,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				active : true,
 				radius : 50,
 				velocity: directions[Random.nextRange(0, directions.length)],
-				moveRate : Random.nextRange(600, 650),
+				moveRate : 300,
 				behavior : "launch",
 				rotation : 0,
 				timeToNextAction : 1
@@ -449,6 +455,10 @@ SPACEGAME.screens['game-play'] = (function() {
 				activeEnemies[i].changeTime(SPACEGAME.elapsedTime);
 				enemyMove(activeEnemies[i], i);
 			}
+			else
+			{
+				activeEnemies.splice(i,1);
+			}
 		}
 
 		for(var i = 0 ; i < enemyMissiles.length ; i++){
@@ -463,14 +473,11 @@ SPACEGAME.screens['game-play'] = (function() {
 			newLevel = true;
 			countDownTime = 3;
 			levelStart(SPACEGAME.level);
-			//populateAsteroidsandAliens(level);
 		}
 
 
 		//--------------------------------------------------------------------
-		//			Qadrants for our 568 x 354 with a 50 px overlap
-		//      qI (-25, -25)(309, 202)  	qII (259, -25)(593, 202)
-		//		qIII (-25, 152)(309, 379) 	qIV (259, 152)(593, 379)
+		//divvying up the screen into quadrants
 		var quad1 = quadrant (asteroids, missiles, myShip, activeEnemies, enemyMissiles, -25, canvas.width/2+25, -25, canvas.height/2 + 25);
 		var quad2 = quadrant (asteroids, missiles, myShip, activeEnemies, enemyMissiles, canvas.width/2-25, canvas.width+25, -25, canvas.height/2+25);
 		var quad3 = quadrant (asteroids, missiles, myShip, activeEnemies, enemyMissiles, -25, canvas.width/2+25, canvas.height/2 - 25, canvas.height + 25);
@@ -494,10 +501,14 @@ SPACEGAME.screens['game-play'] = (function() {
 			// {
 			// 	collisions(allquads[i].enemiesinQuad, allquads[i].AsteroidsinQuad);
 			// }
-			// if(allquads[i].missilesinQuad.length > 0 &&allquads[i].enemiesinQuad.length > 0)
-			// {
-			// 	collisions(allquads[i].missilesinQuad, allquads[i].enemiesinQuad);
-			// }
+			if(allquads[i].missilesinQuad.length > 0 &&allquads[i].enemiesinQuad.length > 0)
+			{
+				collisions(allquads[i].missilesinQuad, allquads[i].enemiesinQuad);
+			}
+			if(allquads[i].shipsinQuad.length > 0 &&allquads[i].enemiesinQuad.length > 0)
+			{
+				collisions(allquads[i].shipsinQuad, allquads[i].enemiesinQuad);
+			}
 		};
 	}//end else
 		// function split asteroids, ships and missiles into their respective quadrants
@@ -564,7 +575,7 @@ SPACEGAME.screens['game-play'] = (function() {
 						var centerY = (center1.y + center2.y)/2;
 						if(array1[i].whatami() === 1 && array2[j].whatami() === 3)
 						{
-							//------------------------------if ship hits a missile
+							//------------------------------if ship hits an asteroid
 							SPACEGAME.lives = SPACEGAME.lives - 1;
 							explode({x : centerX, y : centerY});
 							
@@ -576,9 +587,39 @@ SPACEGAME.screens['game-play'] = (function() {
 							//-------------------------------------------------------------------
 							// lose a life if possible else game over // this code is buggyy...??
 							//-------------------------------------------------------------------
-							/*
+							
 							if(SPACEGAME.lives <= 0){
 								//end of game
+								gameEnd()
+								console.log("GAME OVER!");
+							}
+							else{
+								var open = false;
+								while(!open){
+									for(var ac = 0; ac < asteroids.length; ac++){
+										var theCenter = asteroids[ac].getcenter();
+										if(theCenter.x > canvas.width/2 - 75 || theCenter.x < canvas.width/2 + 75 && theCenter.y > canvas.height/2 -75 || theCenter.y < canvas.height/2 +75){
+												open = true;
+										}
+										else{
+											continue;
+										}
+									}
+								}
+								//revive ship
+								myShip.revive();
+							}
+						}
+						if(array1[i].whatami() === 1 && array2[j].whatami() === 4 || array2[j].whatami() === 5)
+						{
+							
+							SPACEGAME.lives = SPACEGAME.lives - 1;
+							explodeCircle({x : centerX, y : centerY});
+							var explosion = new Audio('assets/explosion.wav');
+							explosion.volume = sfxvolume;
+							explosion.play();
+							if(SPACEGAME.lives <= 0){
+								gameEnd();
 								console.log("GAME OVER!");
 							}
 							else{
@@ -597,10 +638,46 @@ SPACEGAME.screens['game-play'] = (function() {
 								//revive ship
 								myShip.revive();
 							}
-							*/
+						}
+						if(array2[j].whatami()===3 && array1[i].whatami()===2)
+						{
+							if(array2[j].getRadius() === 21.5)
+							{
+								SPACEGAME.score += 50;
+								SPACEGAME.scoreSinceLastLife += 50;
+							}
+							if(array2[j].getRadius() === 12.5)
+							{
+								SPACEGAME.score += 100;
+								SPACEGAME.scoreSinceLastLife += 100;
+							}
+							if(array2[j].getRadius() === 8)
+							{
+								SPACEGAME.score += 200;
+								SPACEGAME.scoreSinceLastLife += 200;
+							}
+							if(SPACEGAME.scoreSinceLastLife >= 1000 && SPACEGAME.lives <= 4)
+							{
+								SPACEGAME.lives++;
+								SPACEGAME.scoreSinceLastLife = 0;
+							}
+							
+						}
+						if(array2[j].whatami()===4 && array1[i].whatami()===2)
+						{
+							explodeCircle({x : centerX, y : centerY});
+							var explosion = new Audio('assets/explosion.wav');
+							explosion.volume = sfxvolume;
+							explosion.play();
+							SPACEGAME.score += 250;
+							SPACEGAME.scoreSinceLastLife += 250;
+							if(SPACEGAME.scoreSinceLastLife >= 1000 && SPACEGAME.lives <= 4)
+							{
+								SPACEGAME.lives++;
+								SPACEGAME.scoreSinceLastLife = 0;
+							}
 
 						}
-
 						if(array2[j].whatami()===3)
 						{
 							var rotations = [];
@@ -730,7 +807,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				break;
 			case "shoot" :
 				var missilespeed = 400;
-				missile1 = SPACEGAME.graphics.enemymissile( {
+				var enemyMissile1 = SPACEGAME.graphics.enemymissile( {
 						image : SPACEGAME.images['images/enemyprojectile.png'],
 						center : { x : 0, y : 0},
 						width : 10, height : 10,
@@ -740,7 +817,7 @@ SPACEGAME.screens['game-play'] = (function() {
 						radius : 10,
 						moveRate : missilespeed,			// pixels per second
 				});
-				enemyMissiles.push(missile1);
+				enemyMissiles.push(enemyMissile1);
 				enemyMissiles[enemyMissiles.length - 1].fire(ship.getcenter(), ship.gettraj(), ship.getspeed());
 				break;
 
@@ -801,8 +878,22 @@ SPACEGAME.screens['game-play'] = (function() {
 		return Math.atan2(yDiff, xDiff); 
 	} 
 
+	function gameEnd () {
+		context.font = "30px Verdana";
+		context.fillStyle ="rgba(0, 0, 0, 1)"
+		context.shadowBlur=20;
+		context.shadowColor="black";
+		context.fillText("Game Over", canvas.width/2 - 60, canvas.height/2 + 20);
+		var text = SPACEGAME.score
+		context.fillText("Final Score: " + text, canvas.width/2, canvas.height/2 + 50);
+		cancelNextRequest = true;
+		SPACEGAME.gameOver = true;
+	}
+
 	function render(){
-		SPACEGAME.graphics.clear();
+		if(!SPACEGAME.gameOver) {
+			SPACEGAME.graphics.clear();
+		}
 		if(newLevel)
 		{
 			context.font = "30px Verdana";
@@ -844,6 +935,9 @@ SPACEGAME.screens['game-play'] = (function() {
 				explosions[i].animation.render();
 			}
 		}	
+		$("#livesSpan").html("\t x "+SPACEGAME.lives);
+		$("#scoreSpan").html(SPACEGAME.score);
+
 	}
 	
 	function run() {
