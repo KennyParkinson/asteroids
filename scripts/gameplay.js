@@ -77,7 +77,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		//-----------------------------------------------------------------------------------------------------------
 		myShip = SPACEGAME.graphics.ship( {
 				image : SPACEGAME.images['images/spaceship.png'],
-				center : { x : 284, y : 177 },
+				center : { x : canvas.width/2, y : canvas.height/2 },
 				width : 30, height : 30,
 				active : true, 	
 				velocity : {x : 0, y : 0 }, // velocity of object with an x and y
@@ -242,7 +242,7 @@ SPACEGAME.screens['game-play'] = (function() {
 			var thisX = Random.nextRange(0, canvas.width);
 			var thisY = Random.nextRange(0, canvas.height);
 			//verifying asteroids don't spawn on top of ship
-			while( thisX < 334 && thisX > 234 && thisY < 227 && thisY > 127){
+			while( thisX < canvas.width/2 +75 && thisX > canvas.width/2 - 75 && thisY < canvas.height/2 +75 && thisY > canvas.height/2 -75){
 				thisX = Random.nextRange(0, canvas.width);
 				thisY = Random.nextRange(0, canvas.height);
 			}
@@ -290,7 +290,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				height : 36,
 				active : true,
 				radius : 35,
-				moveRate : Random.nextRange(600, 650),
+				moveRate : Random.nextRange(500, 550),
 				behavior : "launch",
 				rotation : 0,
 				timeToNextAction : 2
@@ -312,7 +312,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				active : true,
 				radius : 50,
 				velocity: directions[Random.nextRange(0, directions.length)],
-				moveRate : Random.nextRange(600, 650),
+				moveRate : Random.nextRange(400, 450),
 				behavior : "launch",
 				rotation : 0,
 				timeToNextAction : 1
@@ -418,6 +418,10 @@ SPACEGAME.screens['game-play'] = (function() {
 				activeEnemies[i].changeTime(SPACEGAME.elapsedTime);
 				enemyMove(activeEnemies[i], i);
 			}
+			else
+			{
+				activeEnemies.splice(i,1);
+			}
 		}
 
 		for(var i = 0 ; i < enemyMissiles.length ; i++){
@@ -432,14 +436,11 @@ SPACEGAME.screens['game-play'] = (function() {
 			newLevel = true;
 			countDownTime = 3;
 			levelStart(SPACEGAME.level);
-			//populateAsteroidsandAliens(level);
 		}
 
 
 		//--------------------------------------------------------------------
-		//			Qadrants for our 568 x 354 with a 50 px overlap
-		//      qI (-25, -25)(309, 202)  	qII (259, -25)(593, 202)
-		//		qIII (-25, 152)(309, 379) 	qIV (259, 152)(593, 379)
+		//divvying up the screen into quadrants
 		var quad1 = quadrant (asteroids, missiles, myShip, activeEnemies, enemyMissiles, -25, canvas.width/2+25, -25, canvas.height/2 + 25);
 		var quad2 = quadrant (asteroids, missiles, myShip, activeEnemies, enemyMissiles, canvas.width/2-25, canvas.width+25, -25, canvas.height/2+25);
 		var quad3 = quadrant (asteroids, missiles, myShip, activeEnemies, enemyMissiles, -25, canvas.width/2+25, canvas.height/2 - 25, canvas.height + 25);
@@ -463,10 +464,10 @@ SPACEGAME.screens['game-play'] = (function() {
 			// {
 			// 	collisions(allquads[i].enemiesinQuad, allquads[i].AsteroidsinQuad);
 			// }
-			// if(allquads[i].missilesinQuad.length > 0 &&allquads[i].enemiesinQuad.length > 0)
-			// {
-			// 	collisions(allquads[i].missilesinQuad, allquads[i].enemiesinQuad);
-			// }
+			if(allquads[i].missilesinQuad.length > 0 &&allquads[i].enemiesinQuad.length > 0)
+			{
+				collisions(allquads[i].missilesinQuad, allquads[i].enemiesinQuad);
+			}
 		};
 	}//end else
 		// function split asteroids, ships and missiles into their respective quadrants
@@ -569,7 +570,36 @@ SPACEGAME.screens['game-play'] = (function() {
 							*/
 
 						}
-
+						if(array1[i].whatami() === 1 && array2[j].whatami() === 4 && array2[j].whatami() === 5)
+						{
+							explodeCircle({x : centerX, y : centerY});
+							SPACEGAME.lives = SPACEGAME.lives - 1;
+							var explosion = new Audio('assets/explosion.wav');
+							explosion.volume = sfxvolume;
+							explosion.play();
+							/*
+							if(SPACEGAME.lives <= 0){
+								//end of game
+								console.log("GAME OVER!");
+							}
+							else{
+								var open = false;
+								while(!open){
+									for(var ac = 0; ac < asteroids.length; ac++){
+										var theCenter = asteroids[ac].getcenter();
+										if(theCenter.x > 334 || theCenter.x < 234 && theCenter.y > 227 || theCenter.y < 127){
+												open = true;
+										}
+										else{
+											open = false;
+										}
+									}
+								}
+								//revive ship
+								myShip.revive();
+							}
+							*/
+						}
 						if(array2[j].whatami()===3)
 						{
 							var rotations = [];
