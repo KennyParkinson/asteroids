@@ -62,8 +62,9 @@ SPACEGAME.screens['game-play'] = (function() {
 		{x : canvas.height/3, y : canvas.width/3},
 		],
 		countDownTime = 3,
-		newLevel = true,
-		lastHyper = 0
+		newLevel = true
+
+
 
 		SPACEGAME.accelerating = false;
 		SPACEGAME.level = 1;
@@ -383,6 +384,8 @@ SPACEGAME.screens['game-play'] = (function() {
 		SPACEGAME.score = 0;
 		SPACEGAME.scoreSinceLastLife = 0;
 		SPACEGAME.numHypers = 3;
+		newLevel = true;
+		countDownTime = 3;
 		// Start new level
 		levelStart(SPACEGAME.level);
 	}
@@ -1011,6 +1014,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		context.fillText("Final Score: " + text, canvas.width/2, canvas.height/2 + 50);
 		cancelNextRequest = true;
 		SPACEGAME.gameOver = true;
+		$("#submitScoreInput").show();
 	}
 
 	function render(){
