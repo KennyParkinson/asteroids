@@ -71,6 +71,8 @@ SPACEGAME.screens['game-play'] = (function() {
 		SPACEGAME.score = 0;
 		SPACEGAME.scoreSinceLastLife = 0;
 		SPACEGAME.gameOver = false;
+		SPACEGAME.lastHyper = 0;
+		SPACEGAME.numHypers = 3;
 		
 
 	
@@ -100,16 +102,22 @@ SPACEGAME.screens['game-play'] = (function() {
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_W, myShip.accelerate);
 		myKeyboard.registerCommand(KeyEvent.DOM_VK_H, function(){
 			
-			
-				lastHyper = performance.now();
+				var now = performance.now();
+				if((now - SPACEGAME.lastHyper)/1000 <=1 || SPACEGAME.numHypers <=0)
+					return;
+				else
+				{
+					SPACEGAME.lastHyper = performance.now();
+					SPACEGAME.numHypers--;
 
-				var newx = Random.nextRange(0, canvas.width);
-				var newy = Random.nextRange(0, canvas.height);
-				while(isSafe(newx, newy) === false){
-					newx = Random.nextRange(0, canvas.width);//something new
-					newy = Random.nextRange(0, canvas.height);// something new
+					var newx = Random.nextRange(0, canvas.width);
+					var newy = Random.nextRange(0, canvas.height);
+					while(isSafe(newx, newy) === false){
+						newx = Random.nextRange(0, canvas.width);//something new
+						newy = Random.nextRange(0, canvas.height);// something new
+					}
+					myShip.hyperspace(newx, newy);
 				}
-				myShip.hyperspace(newx, newy);
 			
 		});
 		var isSafe = function(x, y){ /// here is the issue-----------------------------------------------------------------------------------------------------
@@ -191,6 +199,7 @@ SPACEGAME.screens['game-play'] = (function() {
 		missiles = [];
 		enemyMissiles = [];
 		asteroids = [];
+		SPACEGAME.numHypers = 3;
 
 		//-----------------------------------------------------------------------------------------------------------
 		// These are the missile objects all 4 of them
@@ -327,7 +336,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				height : 36,
 				active : true,
 				radius : 35,
-				moveRate : 350,
+				moveRate : 200,
 				behavior : "launch",
 				rotation : 0,
 				timeToNextAction : 2
@@ -349,7 +358,7 @@ SPACEGAME.screens['game-play'] = (function() {
 				active : true,
 				radius : 50,
 				velocity: directions[Random.nextRange(0, directions.length)],
-				moveRate : 300,
+				moveRate : 100,
 				behavior : "launch",
 				rotation : 0,
 				timeToNextAction : 1
