@@ -15,7 +15,11 @@ body
 	height: 531px;
 	font-size: 40px;
 }
-
+#livesDiv
+{
+	background-image:url("images/spaceship.png");
+	background-repeat:no-repeat;
+}
 #game .screen
 {
 	position: absolute;

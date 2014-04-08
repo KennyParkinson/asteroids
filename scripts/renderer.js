@@ -546,6 +546,10 @@ SPACEGAME.graphics = (function() {
 
 		that.setCenter = function(newCenter)
 		{
+			if(spec.center === undefined)
+			{
+				spec.center = {x : 0, y : 0}
+			}
 			spec.center.x = newCenter.x;
 			spec.center.y = newCenter.y;
 		};
