@@ -548,7 +548,8 @@ SPACEGAME.graphics = (function() {
 
 		that.setCenter = function(newCenter)
 		{
-			spec.center = newCenter;
+			spec.center.x = newCenter.x;
+			spec.center.y = newCenter.y;
 		};
 
 		return that;
@@ -558,7 +559,8 @@ SPACEGAME.graphics = (function() {
 		var that = {};
 
 		that.setVelocity = function(newVelocity) {
-			spec.velocity = newVelocity;
+			spec.velocity.x = newVelocity.x;
+			spec.velocity.y = newVelocity.y;
 		};
 
 		that.isactive = function() {
@@ -676,7 +678,8 @@ SPACEGAME.graphics = (function() {
 
 		that.setCenter = function(newCenter)
 		{
-			spec.center = newCenter;
+			spec.center.x = newCenter.x;
+			spec.center.y = newCenter.y;
 		};
 		
 		return that;

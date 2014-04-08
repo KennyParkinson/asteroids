@@ -440,10 +440,10 @@ SPACEGAME.screens['game-play'] = (function() {
 		//			Qadrants for our 568 x 354 with a 50 px overlap
 		//      qI (-25, -25)(309, 202)  	qII (259, -25)(593, 202)
 		//		qIII (-25, 152)(309, 379) 	qIV (259, 152)(593, 379)
-		var quad1 = quadrant (asteroids, missiles, myShip, activeEnemies, -25, 309, -25, 202);
-		var quad2 = quadrant (asteroids, missiles, myShip, activeEnemies, 259, 593, -25, 202);
-		var quad3 = quadrant (asteroids, missiles, myShip, activeEnemies, -25, 309, 152, 379);
-		var quad4 = quadrant (asteroids, missiles, myShip, activeEnemies, 259, 593, 152, 379);
+		var quad1 = quadrant (asteroids, missiles, myShip, activeEnemies, enemyMissiles, -25, canvas.width/2+25, -25, canvas.height/2 + 25);
+		var quad2 = quadrant (asteroids, missiles, myShip, activeEnemies, enemyMissiles, canvas.width/2-25, canvas.width+25, -25, canvas.height/2+25);
+		var quad3 = quadrant (asteroids, missiles, myShip, activeEnemies, enemyMissiles, -25, canvas.width/2+25, canvas.height/2 - 25, canvas.height + 25);
+		var quad4 = quadrant (asteroids, missiles, myShip, activeEnemies, enemyMissiles, canvas.width/2 - 25, canvas.width + 25, canvas.height/2 - 25, canvas.height + 25);
 		var allquads = [];
 		allquads.push(quad1);
 		allquads.push(quad2);
@@ -471,7 +471,7 @@ SPACEGAME.screens['game-play'] = (function() {
 	}//end else
 		// function split asteroids, ships and missiles into their respective quadrants
 		//
-		function quadrant(asteroids, missiles, myShip, activeEnemies, x1, x2, y1, y2){
+		function quadrant(asteroids, missiles, myShip, activeEnemies, enemyMissiles, x1, x2, y1, y2){
 			var quad = {
 				missilesinQuad : [],
 				shipsinQuad : [],
@@ -679,24 +679,13 @@ SPACEGAME.screens['game-play'] = (function() {
 			
 			case "launch" :
 				ship.setCenter(startingPoints[Random.nextRange(0, startingPoints.length-1)]);
-
 				ship.changeBehavior("fly");
-				var center = ship.getcenter();
-				if(isNaN(center.x))
-				{
-					var dud = 0;
-				}
 				break;
 			case "deactivate" :
 				ship.changeBehavior("launch");
 				ship.setVelocity({x: 0, y: 0});
 				enemies.push(activeEnemies[index]);
 				activeEnemies.splice(index, 1);
-				var center = ship.getcenter();
-				if(isNaN(center.x))
-				{
-					var dud = 0;
-				}
 				break;
 			case "turn" :
 				if(left)
@@ -706,11 +695,6 @@ SPACEGAME.screens['game-play'] = (function() {
 				else
 				{
 					ship.rotateRight(SPACEGAME.elapsedTime);
-				}
-				var center = ship.getcenter();
-				if(isNaN(center.x))
-				{
-					var dud = 0;
 				}
 				break;
 			case "shoot" :
@@ -727,20 +711,10 @@ SPACEGAME.screens['game-play'] = (function() {
 				});
 				enemyMissiles.push(missile1);
 				enemyMissiles[enemyMissiles.length - 1].fire(ship.getcenter(), ship.gettraj(), ship.getspeed());
-				var center = ship.getcenter();
-				if(isNaN(center.x))
-				{
-					var dud = 0;
-				}
 				break;
 
 			case "fly" :
 				ship.accelerate(SPACEGAME.elapsedTime);
-				var center = ship.getcenter();
-				if(isNaN(center.x))
-				{
-					var dud = 0;
-				}
 				break;
 			case "dodge" :
 				if(!ship.isCapital())
@@ -750,24 +724,15 @@ SPACEGAME.screens['game-play'] = (function() {
 					}
 					
 				}
-				// if(left)
-				// {
-				// 	while()
-				// }
 				ship.accelerate(SPACEGAME.elapsedTime);
-				var center = ship.getcenter();
-				if(isNaN(center.x))
-				{
-					var dud = 0;
-				}
 				break;
-			
-			
 		}
-		//var centerPoint = ship.getcenter();
+		
 		if(ship.getTime() < 0)
 		{
-			ship.changeBehavior(behaviors[Random.nextRange(1, behaviors.length)-1]);
+			ship.changeBehavior(behaviors[behaviors.indexOf(behavior) + 1]);
+			if(ship.behavior === "deactivate")
+			ship.changeBehavior("fly");
 			ship.resetTime();
 		}
 		ship.update(SPACEGAME.elapsedTime);
