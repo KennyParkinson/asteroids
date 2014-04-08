@@ -15,7 +15,6 @@ SPACEGAME.screens['main-menu'] = (function() {
 			'click',
 			function() { 
 				SPACEGAME.game.showScreen('game-play');
-				SPACEGAME.game.gamestart();
 				 },
 			false);
 
